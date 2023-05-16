@@ -8,38 +8,27 @@
 import UIKit
 import FSCalendar
 
-class TasksViewController: UIViewController {
-    
-    
-    // FSCalendar properties
-        fileprivate weak var calendar: FSCalendar!
-        fileprivate let gregorian: Calendar = Calendar(identifier: .gregorian)
-        fileprivate let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            return formatter
-        }()
-        
-        // CollectionView properties
-        fileprivate var collectionView: UICollectionView!
-        fileprivate let cellIdentifier = "cell"
-        fileprivate let itemsPerRow: CGFloat = 7
-        fileprivate let sectionInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
-        
+class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     
     
     let todayLabel = UILabel()
     let percentagesLabel = UILabel()
     
+    
+    //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
+        
+        tableVIewSettings()
         dateLabelTop()
         avatarButton()
         addTaskButton()
         percentagesMadeLayer()
         addProgressView()
         addCalendar()
+        
         
         updateTodayLabel()
         percentagesUpdateLayer()
@@ -59,8 +48,8 @@ class TasksViewController: UIViewController {
         let dateString = formater.string(from: Date())
         todayLabel.text = dateString
     }
-
-//MARK: - avatar settings -
+    
+    //MARK: - avatar settings -
     func avatarButton() {
         let imageView = UIImageView(frame: CGRect(x: 20, y: 65, width: 60, height: 60))
         imageView.image = UIImage(named: "avatarImage")
@@ -116,42 +105,61 @@ class TasksViewController: UIViewController {
     func addProgressView() {
         let progressView = UIProgressView(progressViewStyle: .default)
         progressView.frame = CGRect(x: 140, y: 153, width: 200, height: 20)
-//        progressView.center = view.center
+        //        progressView.center = view.center
         progressView.progress = 0.15
         view.addSubview(progressView)
     }
     
+    //MARK: - FSCalendar properties -
+    fileprivate weak var calendar: FSCalendar!
+    fileprivate let gregorian: Calendar = Calendar(identifier: .gregorian)
+    fileprivate let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd-MMMM-yyyy"
+        return formatter
+    }()
+    
     //MARK: - add FSCalendar -
     func addCalendar() {
-        let calendar = FSCalendar(frame: CGRect(x: 0, y: 170, width: view.frame.width, height: 300))
+        let calendar = FSCalendar(frame: CGRect(x: 0, y: 165, width: view.frame.width, height: 350))
         calendar.scope = .week
         calendar.delegate = self
         calendar.dataSource = self
         calendar.appearance.headerDateFormat = "LLLL yyyy"
         calendar.appearance.weekdayTextColor = .darkGray
         calendar.appearance.todayColor = .systemBlue
-        calendar.appearance.selectionColor = .brown
+        calendar.appearance.selectionColor = .black
         view.addSubview(calendar)
     }
     
-    func setupCollectionView() {
-            // Initialize collectionView
-            let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-            let itemWidth = (view.frame.width) / itemsPerRow
-            layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
-            layout.sectionInset = sectionInsets
-            collectionView = UICollectionView(frame: CGRect(x: 0, y: 360, width: view.frame.width, height: view.frame.height - 360), collectionViewLayout: layout)
-            collectionView.dataSource = self
-            collectionView.delegate = self
-            collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellIdentifier)
-            collectionView.backgroundColor = UIColor.white
-            view.addSubview(collectionView)
-        }
+    //MARK: - TableView properties -
+    var tasks: [String] = ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5", "Task 6", "Task 7",]
+    var tableVIew: UITableView!
     
-}
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        tasks.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.textLabel?.text = tasks[indexPath.row]
+        return cell
+    }
+    
+    //MARK: - tableVIewSettings -
+    func tableVIewSettings() {
+        tableVIew = UITableView(frame: CGRect(x: 0, y: 520, width: view.frame.width, height: view.frame.height))
+        tableVIew.delegate = self
+        tableVIew.dataSource = self
+        tableVIew.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        view.addSubview(tableVIew)
+    }
+ }
 
 extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        
         print("did select date \(self.dateFormatter.string(from: date))")
     }
     
@@ -160,31 +168,12 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         return 1
     }
     
-    func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
-        let day = self.gregorian.component(.day, from: date)
-        if day % 3 == 0 {
-            return "Task"
-        } else {
-            return nil
-        }
+    func minimumDate(for calendar: FSCalendar) -> Date {
+        return Date()
     }
-    
-//    func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
-//        //
-//        return FSCalendarCell()
-//    }
-    
 }
 
-extension TasksViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            return 31
-        }
 
-        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath)
-            cell.backgroundColor = UIColor.gray
-            return cell
-        }
- }
+extension TasksViewController {
+    
+}
