@@ -15,16 +15,18 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
    //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .yellow
+        view.backgroundColor = .green
         taskView.taskViewController = self
         
         callSettings()
         callAddTask()
         
+        
         taskView.setupConstraints()
         
         tableViewSettings()
         addCalendar()
+        calendarConstraints()
         
     }
     
@@ -47,7 +49,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     //MARK: - FSCalendar properties -
-    var calendar: FSCalendar!
+//    var calendar: FSCalendar!
+    let calendar = FSCalendar()
     fileprivate let gregorian: Calendar = Calendar(identifier: .gregorian)
     fileprivate let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -56,9 +59,10 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     //MARK: - add FSCalendar -
+    
     func addCalendar() {
-        calendar = FSCalendar(frame: CGRect(x: 0, y: 165, width: view.frame.width, height: 400))
-        calendar.scope = .week
+        calendar.translatesAutoresizingMaskIntoConstraints = false
+        calendar.scope = .month
         calendar.delegate = self
         calendar.dataSource = self
         calendar.appearance.headerDateFormat = "LLLL yyyy"
@@ -66,17 +70,17 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.appearance.todayColor = .systemBlue
         calendar.appearance.selectionColor = .black
         view.addSubview(calendar)
-        
-        
+
+
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeUpGesture.direction = .up
         calendar.addGestureRecognizer(swipeUpGesture)
-        
+
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeDownGesture.direction = .down
         calendar.addGestureRecognizer(swipeDownGesture)
     }
-    
+
     @objc func handleSwipeGesture(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .up {
             if calendar.scope != .week {
@@ -88,7 +92,19 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
+    //MARK: - constraint calendar -
+    var calendarHeightConstraint: NSLayoutConstraint!
     
+    
+    func calendarConstraints() {
+        view.addSubview(calendar)
+        calendarHeightConstraint = NSLayoutConstraint(item: calendar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 300)
+        calendar.addConstraint(calendarHeightConstraint)
+        calendar.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        calendar.topAnchor.constraint(equalTo: view.topAnchor, constant: 180).isActive = true
+        calendar.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
+        calendar.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+    }
     
     //MARK: - TableView properties -
     var tasks: [String] = ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5", "Task 6", "Task 7",]
@@ -104,7 +120,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return cell
     }
     
-    //MARK: - tableVIewSettings -
+    //MARK: - tableViewSettings -
     func tableViewSettings() {
         tableView = UITableView(frame: CGRect(x: 0, y: 480, width: view.frame.width, height: view.frame.height))
         tableView.delegate = self
@@ -114,6 +130,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
 }
 
+//MARK: - Calendar Delegate -
 extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         
@@ -127,6 +144,11 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
     
     func minimumDate(for calendar: FSCalendar) -> Date {
         return Date()
+    }
+    
+    func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool) {
+        calendarHeightConstraint.constant = bounds.height
+        view.layoutIfNeeded()
     }
 }
 
