@@ -15,7 +15,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
    //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .green
+        view.backgroundColor = .white
         taskView.taskViewController = self
         
         callSettings()
@@ -62,7 +62,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func addCalendar() {
         calendar.translatesAutoresizingMaskIntoConstraints = false
-        calendar.scope = .month
+        calendar.scope = .week
         calendar.delegate = self
         calendar.dataSource = self
         calendar.appearance.headerDateFormat = "LLLL yyyy"
@@ -85,11 +85,16 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if gesture.direction == .up {
             if calendar.scope != .week {
                 calendar.setScope(.week, animated: true)
+                
             }
         } else if gesture.direction == .down {
             if calendar.scope != .month {
                 calendar.setScope(.month, animated: true)
+                
             }
+        }
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
         }
     }
     //MARK: - constraint calendar -
@@ -104,11 +109,15 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.topAnchor.constraint(equalTo: view.topAnchor, constant: 180).isActive = true
         calendar.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         calendar.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        
+        tableViewTopConstraint = tableView.topAnchor.constraint(equalTo: calendar.bottomAnchor, constant: 8)
+        tableViewTopConstraint.isActive = true
     }
     
     //MARK: - TableView properties -
     var tasks: [String] = ["Task 1", "Task 2", "Task 3", "Task 4", "Task 5", "Task 6", "Task 7",]
     var tableView: UITableView!
+    var tableViewTopConstraint: NSLayoutConstraint!
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         tasks.count
@@ -122,11 +131,16 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - tableViewSettings -
     func tableViewSettings() {
-        tableView = UITableView(frame: CGRect(x: 0, y: 480, width: view.frame.width, height: view.frame.height))
+        tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         view.addSubview(tableView)
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
 }
 
