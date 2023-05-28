@@ -15,7 +15,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
    //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(named: "Color1")
+        
+        
         taskView.taskViewController = self
         
         callSettings()
@@ -205,26 +207,22 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var tableViewTopConstraint: NSLayoutConstraint!
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        tasks.count
+        
         let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
         return tasksForSelectedDate.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-//        let task = tasks[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TaskTableViewCell
+        
         let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
         let task = tasksForSelectedDate[indexPath.row]
        
-        cell.textLabel?.text = task.name
+        cell.configure(with: task)
         
-        if task.isComplete {
-            cell.accessoryType = .checkmark
-        } else {
-            cell.accessoryType = .none
-        }
         return cell
     }
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
@@ -233,12 +231,16 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.reloadData()
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
+    
     //MARK: - tableViewSettings -
     func tableViewSettings() {
         tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(TaskTableViewCell.self, forCellReuseIdentifier: "Cell")
         view.addSubview(tableView)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false

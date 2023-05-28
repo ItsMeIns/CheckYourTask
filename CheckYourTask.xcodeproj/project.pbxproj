@@ -16,6 +16,7 @@
 		FA611A8A2A011B0B0080A3E4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA611A882A011B0B0080A3E4 /* LaunchScreen.storyboard */; };
 		FA611A952A0126D30080A3E4 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA611A942A0126D30080A3E4 /* Task.swift */; };
 		FAADCDD12A169F6200FD51C1 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD02A169F6200FD51C1 /* TaskView.swift */; };
+		FAADCDD72A23AE6F00FD51C1 /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		FA611A8B2A011B0B0080A3E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA611A942A0126D30080A3E4 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		FAADCDD02A169F6200FD51C1 /* TaskView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
+		FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				FAADCDD02A169F6200FD51C1 /* TaskView.swift */,
+				FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAADCDD72A23AE6F00FD51C1 /* TaskTableViewCell.swift in Sources */,
 				FA611A7F2A011B0A0080A3E4 /* TasksViewController.swift in Sources */,
 				FA611A7B2A011B0A0080A3E4 /* AppDelegate.swift in Sources */,
 				FA611A952A0126D30080A3E4 /* Task.swift in Sources */,
