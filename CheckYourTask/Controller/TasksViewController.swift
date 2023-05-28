@@ -12,11 +12,10 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     let taskView = TaskView()
     
-   //MARK: - life cycle -
+    //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
-        
         
         taskView.taskViewController = self
         
@@ -29,7 +28,17 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
     }
     
-    
+    func updateProgress() {
+        if taskDates.count > 0 {
+            let percentage = (completedTasks / taskDates.count) * 100
+            taskView.percentagesMadeLayer.text = "\(percentage)%"
+            taskView.addProgressView.setProgress(Float(completedTasks) / Float(taskDates.count), animated: true)
+        } else {
+            taskView.percentagesMadeLayer.text = "0%"
+            taskView.addProgressView.setProgress(0, animated: true)
+        }
+    }
+     
     //MARK: - avatar + settings -
     func callSettings() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showSettings))
@@ -46,95 +55,10 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @objc func addTask() {
         print("add button pressed")
         
-        let alertController = UIAlertController(title: "Add new task", message: nil, preferredStyle: .alert)
-        //констрейнт висоти алерта
-        let height: NSLayoutConstraint = NSLayoutConstraint(item: alertController.view!, attribute: NSLayoutConstraint.Attribute.height, relatedBy: NSLayoutConstraint.Relation.equal, toItem: nil, attribute: NSLayoutConstraint.Attribute.notAnAttribute, multiplier: 1, constant: 350)
-        alertController.view.addConstraint(height)
-        
-        //Поле додавання тексту
-        alertController.addTextField { textField in
-            textField.placeholder = "Task name"
-        }
-        
-        //лейбл дати
-        let dateLabel = UILabel()
-        dateLabel.text = "Date"
-        dateLabel.font = UIFont.systemFont(ofSize: 20)
-        alertController.view.addSubview(dateLabel)
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: 115).isActive = true
-        dateLabel.leadingAnchor.constraint(equalTo: alertController.view.leadingAnchor, constant: 20).isActive = true
-
-        //вибір дати
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        alertController.view.addSubview(datePicker)
-        datePicker.translatesAutoresizingMaskIntoConstraints = false
-        datePicker.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: 110).isActive = true
-        datePicker.rightAnchor.constraint(equalTo: alertController.view.rightAnchor, constant: -15).isActive = true
-           
-        //лейбл часу
-        let timeLabel = UILabel()
-        timeLabel.text = "Time"
-        timeLabel.font = UIFont.systemFont(ofSize: 20)
-        alertController.view.addSubview(timeLabel)
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: 155).isActive = true
-        timeLabel.leadingAnchor.constraint(equalTo: alertController.view.leadingAnchor, constant: 20).isActive = true
-        
-        //вибір часу
-        let timePicker = UIDatePicker()
-        timePicker.datePickerMode = .time
-        timePicker.locale = Locale(identifier: "en_GB")
-        alertController.view.addSubview(timePicker)
-        timePicker.translatesAutoresizingMaskIntoConstraints = false
-        timePicker.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: 150).isActive = true
-        timePicker.rightAnchor.constraint(equalTo: alertController.view.rightAnchor, constant: -15).isActive = true
-        
-        //лейбл нагадування
-        let alertLabel = UILabel()
-        alertLabel.text = "Alert"
-        alertLabel.font = UIFont.systemFont(ofSize: 20)
-        alertController.view.addSubview(alertLabel)
-        alertLabel.translatesAutoresizingMaskIntoConstraints = false
-        alertLabel.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: 195).isActive = true
-        alertLabel.leadingAnchor.constraint(equalTo: alertController.view.leadingAnchor, constant: 20).isActive = true
-        
-        //перемикач нагадування
-        let alertSwitch = UISwitch()
-        alertController.view.addSubview(alertSwitch)
-        alertSwitch.translatesAutoresizingMaskIntoConstraints = false
-        alertSwitch.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: 190).isActive = true
-        alertSwitch.rightAnchor.constraint(equalTo: alertController.view.rightAnchor, constant: -15).isActive = true
-        
-
-        //кнопка ок що буде зберігати всю логіку
-        let okAction = UIAlertAction(title: "OK", style: .default) { (_) in
-            if let taskName = alertController.textFields?.first?.text, !taskName.isEmpty {
-                let selectedDate = datePicker.date
-                let selectedTime = timePicker.date
-                let isReminderEnabled = alertSwitch.isOn
-                
-                let newTask = Task(name: taskName, date: selectedDate, time: selectedTime, reminder: isReminderEnabled, isComplete: false)
-                self.tasks.append(newTask)
-                self.taskDates.append(newTask.date)
-                
-                print("New task added: \(newTask.name)")
-                print("Total tasks count: \(self.tasks.count)")
-                
-                let calendar = Calendar.current
-                if calendar.isDate(selectedDate, inSameDayAs: selectedDate) {
-                    self.tableView.reloadData()
-                    self.calendar.reloadData()
-                }
-            }
-        }
-        //відмінити дію
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        present(alertController, animated: true, completion: nil)
+        let addTaskVC = AddTaskViewController()
+        let navigationController = UINavigationController(rootViewController: addTaskVC)
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true, completion: nil)
     }
     
     //MARK: - FSCalendar properties -
@@ -147,7 +71,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     //MARK: - add FSCalendar -
-    
     func addCalendar() {
         calendar.translatesAutoresizingMaskIntoConstraints = false
         calendar.scope = .week
@@ -158,17 +81,16 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.appearance.todayColor = .systemBlue
         calendar.appearance.selectionColor = .black
         view.addSubview(calendar)
-
-
+        
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeUpGesture.direction = .up
         calendar.addGestureRecognizer(swipeUpGesture)
-
+        
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeDownGesture.direction = .down
         calendar.addGestureRecognizer(swipeDownGesture)
     }
-
+    
     @objc func handleSwipeGesture(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .up {
             if calendar.scope != .week {
@@ -204,6 +126,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var taskDates: [Date] = []
     var selectedDate: Date = Date()
     var tableView: UITableView!
+    var completedTasks: Int = 0
     var tableViewTopConstraint: NSLayoutConstraint!
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -217,18 +140,22 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
         let task = tasksForSelectedDate[indexPath.row]
-       
+        
         cell.configure(with: task)
         
         return cell
     }
-
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
-            let task = tasksForSelectedDate[indexPath.row]
+        let tasksForSelectedDate = tasks.filter {
+            Calendar.current.isDate($0.date, inSameDayAs: selectedDate)
+        }
+        let task = tasksForSelectedDate[indexPath.row]
         task.complete()
+        completedTasks += 1
         tableView.reloadData()
+        updateProgress()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -256,6 +183,7 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         print("did select date \(self.dateFormatter.string(from: date))")
         selectedDate = date
         tableView.reloadData()
+        updateProgress()
     }
     
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
