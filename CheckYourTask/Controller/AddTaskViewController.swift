@@ -19,14 +19,17 @@ class AddTaskViewController: UIViewController {
     }
     
     
-    //MARK: - percentages made layer -
-    let dateLabel: UILabel = {
-        let dateLabel = UILabel()
-        dateLabel.font = UIFont.boldSystemFont(ofSize: 30)
-        dateLabel.textAlignment = .center
-        dateLabel.text = "Task name"
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        return dateLabel
+    //MARK: - name text field -
+    let taskNameTextField: UITextField = {
+        let taskName = UITextField()
+        taskName.backgroundColor = .white
+        taskName.placeholder = "Task name"
+        taskName.layer.cornerRadius = 5
+        let leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
+            taskName.leftView = leftView
+            taskName.leftViewMode = .always
+        taskName.translatesAutoresizingMaskIntoConstraints = false
+        return taskName
     }()
     
     //MARK: - cancel button -
@@ -47,12 +50,18 @@ class AddTaskViewController: UIViewController {
     }()
     
         @objc func cancelButtonTapped() {
-        let backToTaskVC = TasksViewController()
-            navigationController?.pushViewController(backToTaskVC, animated: true)
-            navigationController?.setNavigationBarHidden(true, animated: false)
+            let backToTaskVC = TasksViewController()
+            let transition = CATransition()
+                transition.duration = 0.3
+                transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                transition.type = CATransitionType.fade
+                
+                navigationController?.view.layer.add(transition, forKey: nil)
+                navigationController?.pushViewController(backToTaskVC, animated: false)
+                navigationController?.setNavigationBarHidden(true, animated: false)
         }
     
-    //MARK: - cancel ok -
+    //MARK: - create button -
     let createButton: UIButton = {
         let createButton = UIButton(type: .system)
         createButton.layer.cornerRadius = 15
@@ -69,12 +78,13 @@ class AddTaskViewController: UIViewController {
     
     
     func setupConstraints() {
-        //label
-        view.addSubview(dateLabel)
-        dateLabel.heightAnchor.constraint(equalToConstant: 150).isActive = true
-        dateLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 40
+        //name textfield
+        view.addSubview(taskNameTextField)
+        taskNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        taskNameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 80
         ).isActive = true
-        dateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        taskNameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        taskNameTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         
         //cancel button
         view.addSubview(cancelButton)

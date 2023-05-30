@@ -58,6 +58,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let addTaskVC = AddTaskViewController()
         let navigationController = UINavigationController(rootViewController: addTaskVC)
         navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalTransitionStyle = .crossDissolve
         present(navigationController, animated: true, completion: nil)
     }
     
