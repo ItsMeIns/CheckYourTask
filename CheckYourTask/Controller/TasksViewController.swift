@@ -8,7 +8,14 @@
 import UIKit
 import FSCalendar
 
-class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, addTaskDelegate {
+    func createTask(_ task: Task) {
+        tasks.append(task)
+        taskDates.append(task.date)
+        tableView.reloadData()
+        calendar.reloadData()
+    }
+    
     
     let taskView = TaskView()
     
@@ -28,6 +35,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
     }
     
+    
+    //MARK: - progress bar -
     func updateProgress() {
         if taskDates.count > 0 {
             let percentage = (completedTasks / taskDates.count) * 100
@@ -55,11 +64,14 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     @objc func addTask() {
         print("add button pressed")
         
+   
+        
         let addTaskVC = AddTaskViewController()
-        let navigationController = UINavigationController(rootViewController: addTaskVC)
-        navigationController.modalPresentationStyle = .fullScreen
-        navigationController.modalTransitionStyle = .crossDissolve
-        present(navigationController, animated: true, completion: nil)
+            addTaskVC.delegate = self
+            let navigationController = UINavigationController(rootViewController: addTaskVC)
+            navigationController.modalPresentationStyle = .fullScreen
+            navigationController.modalTransitionStyle = .crossDissolve
+            present(navigationController, animated: true, completion: nil)
     }
     
     //MARK: - FSCalendar properties -
@@ -141,7 +153,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
         let task = tasksForSelectedDate[indexPath.row]
-        
+//        let task = tasks[indexPath.row]
         cell.configure(with: task)
         
         return cell

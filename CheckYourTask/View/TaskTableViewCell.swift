@@ -11,22 +11,16 @@ class TaskTableViewCell: UITableViewCell {
     
     let nameLabel: UILabel = {
         let label = UILabel()
-        
-        
         return label
     }()
     
     let timeLabel: UILabel = {
         let label = UILabel()
-        
-        
         return label
     }()
     
     let reminderImageView: UIImageView = {
        let image = UIImageView()
-        
-        
         return image
     }()
     
@@ -68,6 +62,8 @@ class TaskTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    
     func configure(with task: Task) {
         nameLabel.text = task.name
         
@@ -76,8 +72,10 @@ class TaskTableViewCell: UITableViewCell {
         
         if let taskTime = task.time {
             timeLabel.text = dateFormatter.string(from: taskTime)
+            timeLabel.isHidden = !task.reminder
         } else {
             timeLabel.text = ""
+            timeLabel.isHidden = true
         }
         
         if task.reminder {
