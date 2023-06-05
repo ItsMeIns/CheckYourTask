@@ -13,20 +13,21 @@ protocol addTaskDelegate:AnyObject {
 }
 
 class AddTaskViewController: UIViewController {
+    //MARK: - properties -
     weak var delegate: addTaskDelegate?
     
     
+    //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
         
         setupConstraints()
         
-        
     }
     
     
-    //MARK: - name text field -
+    // - name text field -
     let taskNameTextField: UITextField = {
         let taskName = UITextField()
         taskName.backgroundColor = .white
@@ -39,7 +40,7 @@ class AddTaskViewController: UIViewController {
         return taskName
     }()
     
-    //MARK: - date label -
+    // - date label -
     let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "Date"
@@ -49,7 +50,7 @@ class AddTaskViewController: UIViewController {
         return label
     }()
     
-    //MARK: - date picker -
+    // - date picker -
     let datePicker: UIDatePicker = {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
@@ -57,7 +58,7 @@ class AddTaskViewController: UIViewController {
         return datePicker
     }()
     
-    //MARK: - time label -
+    // - time label -
     let timeLabel: UILabel = {
         let label = UILabel()
         label.text = "Time"
@@ -67,7 +68,7 @@ class AddTaskViewController: UIViewController {
         return label
     }()
     
-    //MARK: - time picker -
+    // - time picker -
     let timePicker: UIDatePicker = {
         let timePicker = UIDatePicker()
         timePicker.datePickerMode = .time
@@ -76,7 +77,7 @@ class AddTaskViewController: UIViewController {
         return timePicker
     }()
     
-    //MARK: - description text view -
+    // - description text view -
     let descriptionTextView: UITextView = {
         let textView = UITextView()
         textView.backgroundColor = .white
@@ -86,7 +87,7 @@ class AddTaskViewController: UIViewController {
         return textView
     }()
     
-    //MARK: - alert label -
+    // - alert label -
     let alertLabel: UILabel = {
         let label = UILabel()
         label.text = "Alert"
@@ -96,7 +97,7 @@ class AddTaskViewController: UIViewController {
         return label
     }()
     
-    //MARK: - alert switch -
+    // - alert switch -
     let alertSwitch: UISwitch = {
         let alertSwitch = UISwitch()
         alertSwitch.isOn = false
@@ -105,7 +106,7 @@ class AddTaskViewController: UIViewController {
     }()
     
     
-    //MARK: - cancel button -
+    // - cancel button -
     let cancelButton: UIButton = {
         let cancelButton = UIButton(type: .system)
         cancelButton.layer.cornerRadius = 15
@@ -134,7 +135,7 @@ class AddTaskViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    //MARK: - create button -
+    // - create button -
     let createButton: UIButton = {
         let createButton = UIButton(type: .system)
         createButton.layer.cornerRadius = 15
@@ -170,6 +171,7 @@ class AddTaskViewController: UIViewController {
        
     }
     
+    //MARK: - constraint -
     func setupConstraints() {
         //name textfield
         view.addSubview(taskNameTextField)

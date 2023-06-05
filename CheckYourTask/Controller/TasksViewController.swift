@@ -12,7 +12,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - properties -
     let taskView = TaskView()
-    
     var selectedDate: Date = Date()
     var tableView: UITableView!
     var completedTasks: Int = 0
