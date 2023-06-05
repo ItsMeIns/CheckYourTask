@@ -9,15 +9,31 @@ import UIKit
 import FSCalendar
 
 class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, addTaskDelegate {
-    func createTask(_ task: Task) {
-        tasks.append(task)
-        taskDates.append(task.date)
-        tableView.reloadData()
-        calendar.reloadData()
-    }
     
-    
+    //MARK: - properties -
     let taskView = TaskView()
+    
+    var selectedDate: Date = Date()
+    var tableView: UITableView!
+    var completedTasks: Int = 0
+    var tableViewTopConstraint: NSLayoutConstraint!
+    var calendarHeightConstraint: NSLayoutConstraint!
+    
+    
+    // - FSCalendar properties -
+    let calendar = FSCalendar()
+    fileprivate let gregorian: Calendar = Calendar(identifier: .gregorian)
+    fileprivate let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd-MMMM-yyyy"
+        return formatter
+    }()
+    
+    //MARK: - content -
+    
+    var tasks: [Task] = []
+    var taskDates: [Date] = []
+    
     
     //MARK: - life cycle -
     override func viewDidLoad() {
@@ -35,8 +51,16 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
     }
     
+    //MARK: - intents -
+    // - addTaskDelegate -
+    func createTask(_ task: Task) {
+        tasks.append(task)
+        taskDates.append(task.date)
+        tableView.reloadData()
+        calendar.reloadData()
+    }
     
-    //MARK: - progress bar -
+    //- progress bar -
     func updateProgress() {
         if taskDates.count > 0 {
             let percentage = (completedTasks / taskDates.count) * 100
@@ -47,8 +71,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             taskView.addProgressView.setProgress(0, animated: true)
         }
     }
-     
-    //MARK: - avatar + settings -
+    
+    // - avatar + settings -
     func callSettings() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showSettings))
         taskView.avatarSettings.addGestureRecognizer(tapGesture)
@@ -57,33 +81,22 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         print("image button pressed")
     }
     
-    //MARK: - add button + setting -
+    // - add button + setting -
     func callAddTask() {
         taskView.addTaskButton.addTarget(self, action: #selector(addTask), for: .touchUpInside)
     }
     @objc func addTask() {
         print("add button pressed")
         
-   
-        
         let addTaskVC = AddTaskViewController()
-            addTaskVC.delegate = self
-            let navigationController = UINavigationController(rootViewController: addTaskVC)
-            navigationController.modalPresentationStyle = .fullScreen
-            navigationController.modalTransitionStyle = .crossDissolve
-            present(navigationController, animated: true, completion: nil)
+        addTaskVC.delegate = self
+        let navigationController = UINavigationController(rootViewController: addTaskVC)
+        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalTransitionStyle = .crossDissolve
+        present(navigationController, animated: true, completion: nil)
     }
     
-    //MARK: - FSCalendar properties -
-    let calendar = FSCalendar()
-    fileprivate let gregorian: Calendar = Calendar(identifier: .gregorian)
-    fileprivate let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd-MMMM-yyyy"
-        return formatter
-    }()
-    
-    //MARK: - add FSCalendar -
+    // - add FSCalendar -
     func addCalendar() {
         calendar.translatesAutoresizingMaskIntoConstraints = false
         calendar.scope = .week
@@ -118,9 +131,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             self.view.layoutIfNeeded()
         }
     }
-    //MARK: - constraint calendar -
-    var calendarHeightConstraint: NSLayoutConstraint!
-    
+    // - constraint calendar -
     func calendarConstraints() {
         view.addSubview(calendar)
         calendarHeightConstraint = NSLayoutConstraint(item: calendar, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 300)
@@ -134,14 +145,21 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableViewTopConstraint.isActive = true
     }
     
-    //MARK: - TableView properties -
-    var tasks: [Task] = []
-    var taskDates: [Date] = []
-    var selectedDate: Date = Date()
-    var tableView: UITableView!
-    var completedTasks: Int = 0
-    var tableViewTopConstraint: NSLayoutConstraint!
+    // - tableViewSettings -
+    func tableViewSettings() {
+        tableView = UITableView()
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(TaskTableViewCell.self, forCellReuseIdentifier: "Cell")
+        view.addSubview(tableView)
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
     
+    //MARK: - TableView Delegate, DataSource -
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
@@ -153,12 +171,10 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
         let task = tasksForSelectedDate[indexPath.row]
-//        let task = tasks[indexPath.row]
-        cell.configure(with: task)
         
+        cell.configure(with: task)
         return cell
     }
-    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tasksForSelectedDate = tasks.filter {
@@ -174,23 +190,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
-    
-    //MARK: - tableViewSettings -
-    func tableViewSettings() {
-        tableView = UITableView()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(TaskTableViewCell.self, forCellReuseIdentifier: "Cell")
-        view.addSubview(tableView)
-        
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-    }
 }
 
-//MARK: - Calendar Delegate -
+//MARK: - Calendar Delegate, DataSource -
 extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         print("did select date \(self.dateFormatter.string(from: date))")

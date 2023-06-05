@@ -62,8 +62,6 @@ class TaskTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    
     func configure(with task: Task) {
         nameLabel.text = task.name
         
