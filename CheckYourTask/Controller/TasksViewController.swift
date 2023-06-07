@@ -7,8 +7,9 @@
 
 import UIKit
 import FSCalendar
+import CoreData
 
-class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, addTaskDelegate {
+class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     //MARK: - properties -
     let taskView = TaskView()
@@ -30,7 +31,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - content -
     
-    var tasks: [Task] = []
+    var tasks: [DataTask] = []
     var taskDates: [Date] = []
     
     
@@ -51,13 +52,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     //MARK: - intents -
-    // - addTaskDelegate -
-    func createTask(_ task: Task) {
-        tasks.append(task)
-        taskDates.append(task.date)
-        tableView.reloadData()
-        calendar.reloadData()
-    }
     
     //- progress bar -
     func updateProgress() {
@@ -88,7 +82,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         print("add button pressed")
         
         let addTaskVC = AddTaskViewController()
-        addTaskVC.delegate = self
+        
         let navigationController = UINavigationController(rootViewController: addTaskVC)
         navigationController.modalPresentationStyle = .fullScreen
         navigationController.modalTransitionStyle = .crossDissolve
@@ -101,6 +95,27 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.scope = .week
         calendar.delegate = self
         calendar.dataSource = self
+        
+        
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        let context = appDelegate.persistentContainer.viewContext
+        
+        
+        let fetchRequest: NSFetchRequest<DataTask> = DataTask.fetchRequest()
+        do {
+            let tasks = try context.fetch(fetchRequest)
+            
+            
+            self.tasks = tasks
+            tableView.reloadData()
+            calendar.reloadData()
+        } catch {
+            print("Помилка під час витягування задач з Core Data: \(error)")
+        }
+        
+        
         calendar.appearance.headerDateFormat = "LLLL yyyy"
         calendar.appearance.weekdayTextColor = .darkGray
         calendar.appearance.todayColor = .systemBlue
@@ -160,31 +175,41 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - TableView Delegate, DataSource -
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
+        let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
         return tasksForSelectedDate.count
     }
+    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TaskTableViewCell
         
-        let tasksForSelectedDate = tasks.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
-        let task = tasksForSelectedDate[indexPath.row]
+        let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
         
-        cell.configure(with: task)
+        if indexPath.row < tasksForSelectedDate.count {
+            let task = tasksForSelectedDate[indexPath.row]
+            cell.configure(with: task)
+        }
+        
         return cell
     }
     
+    
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tasksForSelectedDate = tasks.filter {
-            Calendar.current.isDate($0.date, inSameDayAs: selectedDate)
+            $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
         }
-        let task = tasksForSelectedDate[indexPath.row]
-        task.complete()
-        completedTasks += 1
+        
+        if indexPath.row < tasksForSelectedDate.count {
+            let task = tasksForSelectedDate[indexPath.row]
+            task.isComplite = true
+            completedTasks += 1
+        }
+        
         tableView.reloadData()
         updateProgress()
     }
+    
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60

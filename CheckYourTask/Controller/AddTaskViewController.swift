@@ -6,15 +6,12 @@
 //
 
 import UIKit
+import CoreData
 
-
-protocol addTaskDelegate:AnyObject {
-    func createTask(_ task: Task)
-}
 
 class AddTaskViewController: UIViewController {
     //MARK: - properties -
-    weak var delegate: addTaskDelegate?
+    
     
     
     //MARK: - life cycle -
@@ -153,22 +150,34 @@ class AddTaskViewController: UIViewController {
     }()
     
     @objc func createButtonPressed() {
-       
-        guard let name = taskNameTextField.text,
-                  let description = descriptionTextView.text else {
-                return
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let context = appDelegate.persistentContainer.viewContext
+        guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context) else {
+            return
+        }
+        
+        let task = NSManagedObject(entity: entityDescription, insertInto: context)
+        task.setValue(taskNameTextField.text, forKey: "taskName")
+        task.setValue(descriptionTextView.text, forKey: "taskDescription")
+        task.setValue(datePicker.date, forKey: "date")
+        task.setValue(timePicker.date, forKey: "time")
+        task.setValue(alertSwitch.isOn, forKey: "reminder")
+        do {
+            try context.save()
+            if let tasksViewController = presentingViewController as? TasksViewController {
+                tasksViewController.tasks.append(task as! DataTask)
+                tasksViewController.taskDates.append(datePicker.date)
+                tasksViewController.tableView.reloadData()
+                tasksViewController.calendar.reloadData()
+                tasksViewController.updateProgress()
             }
-        let date = datePicker.date
-        let time = timePicker.date
-        let alertEnabled = alertSwitch.isOn
-        
-        
-        let newTask = Task(name: name, description: description, date: date, time: time, reminder: alertEnabled, isComplete: false)
-        delegate?.createTask(newTask)
-        
-        dismiss(animated: true, completion: nil)
-        
-       
+            dismiss(animated: true, completion: nil)
+        } catch {
+            print("Error saving task: \(error)")
+        }
     }
     
     //MARK: - constraint -
