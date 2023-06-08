@@ -32,7 +32,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     //MARK: - content -
     
     var tasks: [DataTask] = []
-    var taskDates: [Date] = []
+    var taskDates: [DataTask] = []
     
     
     //MARK: - life cycle -
@@ -49,6 +49,16 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         addCalendar()
         calendarConstraints()
         
+        
+        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            let context = appDelegate.persistentContainer.viewContext
+            let fetchRequest: NSFetchRequest<DataTask> = DataTask.fetchRequest()
+            do {
+                taskDates = try context.fetch(fetchRequest)
+            } catch {
+                print("Error fetching data: \(error)")
+            }
+        }
     }
     
     //MARK: - intents -
@@ -226,9 +236,16 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
     }
     
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
-        let matchingDates = taskDates.filter { Calendar.current.isDate($0, inSameDayAs: date) }
+        let matchingDates = taskDates.filter { task in
+            guard let taskDate = task.date else {
+                return false
+            }
+            return Calendar.current.isDate(taskDate, inSameDayAs: date)
+        }
         return matchingDates.count
     }
+
+
     
     func minimumDate(for calendar: FSCalendar) -> Date {
         return Date()

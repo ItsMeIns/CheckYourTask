@@ -12,7 +12,7 @@ import CoreData
 class AddTaskViewController: UIViewController {
     //MARK: - properties -
     
-    
+   
     
     //MARK: - life cycle -
     override func viewDidLoad() {
@@ -159,17 +159,19 @@ class AddTaskViewController: UIViewController {
             return
         }
         
-        let task = NSManagedObject(entity: entityDescription, insertInto: context)
-        task.setValue(taskNameTextField.text, forKey: "taskName")
-        task.setValue(descriptionTextView.text, forKey: "taskDescription")
-        task.setValue(datePicker.date, forKey: "date")
-        task.setValue(timePicker.date, forKey: "time")
-        task.setValue(alertSwitch.isOn, forKey: "reminder")
+        let task = DataTask(entity: entityDescription, insertInto: context)
+        task.taskName = taskNameTextField.text
+        task.taskDescription = descriptionTextView.text
+        task.date = datePicker.date
+        task.time = timePicker.date
+        task.reminder = alertSwitch.isOn
+        task.isComplite = false
+        
         do {
             try context.save()
             if let tasksViewController = presentingViewController as? TasksViewController {
-                tasksViewController.tasks.append(task as! DataTask)
-                tasksViewController.taskDates.append(datePicker.date)
+                tasksViewController.tasks.append(task)
+                tasksViewController.taskDates.append(task)
                 tasksViewController.tableView.reloadData()
                 tasksViewController.calendar.reloadData()
                 tasksViewController.updateProgress()
@@ -179,6 +181,7 @@ class AddTaskViewController: UIViewController {
             print("Error saving task: \(error)")
         }
     }
+
     
     //MARK: - constraint -
     func setupConstraints() {
