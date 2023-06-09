@@ -165,7 +165,7 @@ class AddTaskViewController: UIViewController {
         task.date = datePicker.date
         task.time = timePicker.date
         task.reminder = alertSwitch.isOn
-        task.isComplite = false
+        task.isComplete = false
         
         do {
             try context.save()

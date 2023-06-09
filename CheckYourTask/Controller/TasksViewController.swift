@@ -48,6 +48,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableViewSettings()
         addCalendar()
         calendarConstraints()
+        updateProgress()
         
         
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
@@ -63,19 +64,25 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - intents -
     
+
     //- progress bar -
     func updateProgress() {
-        if taskDates.count > 0 {
-            let percentage = (completedTasks / taskDates.count) * 100
+        let tasksForSelectedDate = tasks.filter {
+            $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
+        }
+        completedTasks = tasksForSelectedDate.filter { $0.isComplete }.count
+
+        if tasksForSelectedDate.count > 0 {
+            let percentage = Int((Float(completedTasks) / Float(tasksForSelectedDate.count)) * 100)
             taskView.percentagesMadeLayer.text = "\(percentage)%"
-            taskView.addProgressView.setProgress(Float(completedTasks) / Float(taskDates.count), animated: true)
+            taskView.addProgressView.setProgress(Float(completedTasks) / Float(tasksForSelectedDate.count), animated: true)
         } else {
             taskView.percentagesMadeLayer.text = "0%"
             taskView.addProgressView.setProgress(0, animated: true)
         }
     }
-    
-    // - avatar + settings -
+
+// - avatar + settings -
     func callSettings() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showSettings))
         taskView.avatarSettings.addGestureRecognizer(tapGesture)
@@ -116,8 +123,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let fetchRequest: NSFetchRequest<DataTask> = DataTask.fetchRequest()
         do {
             let tasks = try context.fetch(fetchRequest)
-            
-            
             self.tasks = tasks
             tableView.reloadData()
             calendar.reloadData()
@@ -193,13 +198,14 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TaskTableViewCell
         
+        cell.tasksViewController = self
+        
         let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
         
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
             cell.configure(with: task)
         }
-        
         return cell
     }
     
@@ -209,16 +215,19 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let tasksForSelectedDate = tasks.filter {
             $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
         }
-        
+
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
-            task.isComplite = true
-            completedTasks += 1
+            task.isComplete = true
+            
+            completedTasks = tasks.filter { $0.isComplete }.count
         }
         
         tableView.reloadData()
         updateProgress()
     }
+
+
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -231,9 +240,19 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         print("did select date \(self.dateFormatter.string(from: date))")
         selectedDate = date
+        updateTasksForSelectedDate()
         tableView.reloadData()
         updateProgress()
     }
+    
+    func updateTasksForSelectedDate() {
+            tasks = taskDates.filter { task in
+                guard let taskDate = task.date else {
+                    return false
+                }
+                return Calendar.current.isDate(taskDate, inSameDayAs: selectedDate)
+            }
+        }
     
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
         let matchingDates = taskDates.filter { task in
