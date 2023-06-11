@@ -9,8 +9,11 @@ import UIKit
 import CoreData
 
 
+
+
 class AddTaskViewController: UIViewController {
     //MARK: - properties -
+    var selectedDate: Date?
     
    
     
@@ -18,6 +21,14 @@ class AddTaskViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
+        
+        
+        if let selectedDate = selectedDate {
+            datePicker.date = selectedDate
+            UserDefaults.standard.set(selectedDate, forKey: "selectedDate")
+        }
+        
+        
         
         setupConstraints()
         
@@ -145,6 +156,8 @@ class AddTaskViewController: UIViewController {
         createButton.setTitleColor(UIColor.black, for: .normal)
         createButton.translatesAutoresizingMaskIntoConstraints = false
         
+        
+        
         createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
         return createButton
     }()
@@ -158,6 +171,8 @@ class AddTaskViewController: UIViewController {
         guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context) else {
             return
         }
+        
+        
         
         let task = DataTask(entity: entityDescription, insertInto: context)
         task.taskName = taskNameTextField.text

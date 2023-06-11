@@ -17,6 +17,7 @@
 		FA9CB56A2A23E2F5000B8B21 /* AddTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9CB5692A23E2F5000B8B21 /* AddTaskViewController.swift */; };
 		FAADCDD12A169F6200FD51C1 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD02A169F6200FD51C1 /* TaskView.swift */; };
 		FAADCDD72A23AE6F00FD51C1 /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */; };
+		FADB345F2A34A010003AD8ED /* DetailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB345E2A34A010003AD8ED /* DetailedViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		FA9CB5692A23E2F5000B8B21 /* AddTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTaskViewController.swift; sourceTree = "<group>"; };
 		FAADCDD02A169F6200FD51C1 /* TaskView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
+		FADB345E2A34A010003AD8ED /* DetailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 			children = (
 				FA611A7E2A011B0A0080A3E4 /* TasksViewController.swift */,
 				FA9CB5692A23E2F5000B8B21 /* AddTaskViewController.swift */,
+				FADB345E2A34A010003AD8ED /* DetailedViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -240,6 +243,7 @@
 			files = (
 				FAADCDD72A23AE6F00FD51C1 /* TaskTableViewCell.swift in Sources */,
 				FA9CB56A2A23E2F5000B8B21 /* AddTaskViewController.swift in Sources */,
+				FADB345F2A34A010003AD8ED /* DetailedViewController.swift in Sources */,
 				FA611A7F2A011B0A0080A3E4 /* TasksViewController.swift in Sources */,
 				FA611A7B2A011B0A0080A3E4 /* AppDelegate.swift in Sources */,
 				FAADCDD12A169F6200FD51C1 /* TaskView.swift in Sources */,

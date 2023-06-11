@@ -9,15 +9,18 @@ import UIKit
 import FSCalendar
 import CoreData
 
+
+
 class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     //MARK: - properties -
     let taskView = TaskView()
-    var selectedDate: Date = Date()
+    var selectedDate = Date()
     var tableView: UITableView!
     var completedTasks: Int = 0
     var tableViewTopConstraint: NSLayoutConstraint!
     var calendarHeightConstraint: NSLayoutConstraint!
+    var calendarScope: FSCalendarScope = .month
     
     
     // - FSCalendar properties -
@@ -39,8 +42,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
-        
         taskView.taskViewController = self
+        
+        
         
         callSettings()
         callAddTask()
@@ -48,9 +52,31 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableViewSettings()
         addCalendar()
         calendarConstraints()
+        fetchTaskDatesFromCoreData()
         updateProgress()
+        updateTasksForSelectedDate()
         
         
+        selectedDate = Date()
+        calendar.select(selectedDate)
+        if let savedDate = UserDefaults.standard.object(forKey: "selectedDate") as? Date {
+            calendar(calendar, didSelect: savedDate, at: .current)
+        }
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let selectedDate = UserDefaults.standard.object(forKey: "selectedDate") as? Date {
+            calendar.select(selectedDate)
+        }
+    }
+    
+    //MARK: - intents -
+    
+    //- fetch data -
+    private func fetchTaskDatesFromCoreData() {
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
             let context = appDelegate.persistentContainer.viewContext
             let fetchRequest: NSFetchRequest<DataTask> = DataTask.fetchRequest()
@@ -62,16 +88,13 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
-    //MARK: - intents -
-    
-
     //- progress bar -
     func updateProgress() {
         let tasksForSelectedDate = tasks.filter {
             $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
         }
         completedTasks = tasksForSelectedDate.filter { $0.isComplete }.count
-
+        
         if tasksForSelectedDate.count > 0 {
             let percentage = Int((Float(completedTasks) / Float(tasksForSelectedDate.count)) * 100)
             taskView.percentagesMadeLayer.text = "\(percentage)%"
@@ -81,8 +104,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             taskView.addProgressView.setProgress(0, animated: true)
         }
     }
-
-// - avatar + settings -
+    
+    // - avatar + settings -
     func callSettings() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showSettings))
         taskView.avatarSettings.addGestureRecognizer(tapGesture)
@@ -99,6 +122,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         print("add button pressed")
         
         let addTaskVC = AddTaskViewController()
+        addTaskVC.selectedDate = calendar.selectedDate
+        
+        
         
         let navigationController = UINavigationController(rootViewController: addTaskVC)
         navigationController.modalPresentationStyle = .fullScreen
@@ -109,9 +135,33 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // - add FSCalendar -
     func addCalendar() {
         calendar.translatesAutoresizingMaskIntoConstraints = false
-        calendar.scope = .week
+        calendar.firstWeekday = 2
+        
         calendar.delegate = self
         calendar.dataSource = self
+        calendar.appearance.headerDateFormat = "LLLL yyyy"
+        calendar.appearance.titleFont = UIFont.systemFont(ofSize: 18)
+        calendar.appearance.headerTitleFont = UIFont.boldSystemFont(ofSize: 20)
+        calendar.appearance.weekdayFont = UIFont.boldSystemFont(ofSize: 15)
+        calendar.appearance.weekdayTextColor = .darkGray
+        calendar.appearance.todayColor = .systemBlue
+        calendar.appearance.selectionColor = .black
+        calendar.placeholderType = .none
+        calendar.appearance.headerMinimumDissolvedAlpha = 0
+        
+        
+        calendar.scope = calendarScope
+        
+        if let savedScopeValue = UserDefaults.standard.value(forKey: "calendarScope") as? Int,
+           let savedScope = FSCalendarScope(rawValue: UInt(savedScopeValue)) {
+            calendar.scope = savedScope
+        } else {
+            calendar.scope = .month
+        }
+        
+        
+        view.addSubview(calendar)
+        
         
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -119,23 +169,21 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         let context = appDelegate.persistentContainer.viewContext
         
-        
         let fetchRequest: NSFetchRequest<DataTask> = DataTask.fetchRequest()
         do {
             let tasks = try context.fetch(fetchRequest)
             self.tasks = tasks
-            tableView.reloadData()
-            calendar.reloadData()
+            
         } catch {
             print("Помилка під час витягування задач з Core Data: \(error)")
         }
         
         
-        calendar.appearance.headerDateFormat = "LLLL yyyy"
-        calendar.appearance.weekdayTextColor = .darkGray
-        calendar.appearance.todayColor = .systemBlue
-        calendar.appearance.selectionColor = .black
-        view.addSubview(calendar)
+        updateTasksForSelectedDate()
+        tableView.reloadData()
+        calendar.reloadData()
+        
+        
         
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeUpGesture.direction = .up
@@ -150,10 +198,12 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if gesture.direction == .up {
             if calendar.scope != .week {
                 calendar.setScope(.week, animated: true)
+                UserDefaults.standard.set(calendar.scope.rawValue, forKey: "calendarScope")
             }
         } else if gesture.direction == .down {
             if calendar.scope != .month {
                 calendar.setScope(.month, animated: true)
+                UserDefaults.standard.set(calendar.scope.rawValue, forKey: "calendarScope")
             }
         }
         UIView.animate(withDuration: 0.3) {
@@ -210,49 +260,62 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         let tasksForSelectedDate = tasks.filter {
             $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
         }
-
+        
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
-            task.isComplete = true
             
-            completedTasks = tasks.filter { $0.isComplete }.count
+            let detailVC = DetailedViewController()
+            detailVC.task = task
+            
+            
+            
+            
+            let navigationController = UINavigationController(rootViewController: detailVC)
+            navigationController.modalPresentationStyle = .fullScreen
+            navigationController.modalTransitionStyle = .crossDissolve
+            present(navigationController, animated: true, completion: nil)
+            print("натиснуто \(String(describing: task.taskName))")
         }
         
         tableView.reloadData()
         updateProgress()
+        
     }
-
-
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        return 90
     }
 }
 
 //MARK: - Calendar Delegate, DataSource -
 extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
+    
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         print("did select date \(self.dateFormatter.string(from: date))")
         selectedDate = date
+        UserDefaults.standard.set(selectedDate, forKey: "selectedDate")
         updateTasksForSelectedDate()
         tableView.reloadData()
         updateProgress()
+        
+        
+        
     }
     
     func updateTasksForSelectedDate() {
-            tasks = taskDates.filter { task in
-                guard let taskDate = task.date else {
-                    return false
-                }
-                return Calendar.current.isDate(taskDate, inSameDayAs: selectedDate)
+        tasks = taskDates.filter { task in
+            guard let taskDate = task.date else {
+                return false
             }
+            return Calendar.current.isDate(taskDate, inSameDayAs: selectedDate)
         }
+    }
     
     func calendar(_ calendar: FSCalendar, numberOfEventsFor date: Date) -> Int {
         let matchingDates = taskDates.filter { task in
@@ -263,8 +326,6 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         }
         return matchingDates.count
     }
-
-
     
     func minimumDate(for calendar: FSCalendar) -> Date {
         return Date()
@@ -274,6 +335,8 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         calendarHeightConstraint.constant = bounds.height
         view.layoutIfNeeded()
     }
+    
+    
 }
 
 

@@ -38,6 +38,8 @@ class TaskTableViewCell: UITableViewCell {
         
         nameLabel.font = UIFont.systemFont(ofSize: 16)
         nameLabel.textColor = UIColor.black
+        nameLabel.numberOfLines = 0
+        nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(nameLabel)
         
@@ -57,10 +59,12 @@ class TaskTableViewCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -80),
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
             
             timeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             timeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5),
+            timeLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             
             reminderImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -60),
             reminderImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -69,8 +73,8 @@ class TaskTableViewCell: UITableViewCell {
             
             checkBoxButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
             checkBoxButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            checkBoxButton.widthAnchor.constraint(equalToConstant: 20),
-            checkBoxButton.heightAnchor.constraint(equalToConstant: 20)
+            checkBoxButton.widthAnchor.constraint(equalToConstant: 30),
+            checkBoxButton.heightAnchor.constraint(equalToConstant: 30)
         ])
     }
     
@@ -78,10 +82,10 @@ class TaskTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-            // Ігноруємо натискання в інших частинах комірки, окрім області checkBoxButton
-            return checkBoxButton.frame.contains(point)
-        }
+//    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+//            // Ігноруємо натискання в інших частинах комірки, окрім області checkBoxButton
+//            return checkBoxButton.frame.contains(point)
+//        }
     
     @objc func checkBoxButtonTapped() {
         checkBoxButton.isSelected = !checkBoxButton.isSelected
