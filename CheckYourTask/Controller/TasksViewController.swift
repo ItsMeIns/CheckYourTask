@@ -23,6 +23,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var calendarScope: FSCalendarScope = .month
     
     
+    
     // - FSCalendar properties -
     let calendar = FSCalendar()
     fileprivate let gregorian: Calendar = Calendar(identifier: .gregorian)
@@ -87,6 +88,28 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             }
         }
     }
+    
+    //delete task
+    func deleteTask(at indexPath: IndexPath) {
+        let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
+        
+        if indexPath.row < tasksForSelectedDate.count {
+            let task = tasksForSelectedDate[indexPath.row]
+            
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                let context = appDelegate.persistentContainer.viewContext
+                context.delete(task)
+                appDelegate.saveContext()
+            }
+            
+            fetchTaskDatesFromCoreData()
+            updateTasksForSelectedDate()
+            tableView.reloadData()
+            calendar.reloadData()
+            updateProgress()
+        }
+    }
+
     
     //- progress bar -
     func updateProgress() {
@@ -246,6 +269,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TaskTableViewCell
         
         cell.tasksViewController = self
@@ -255,10 +280,26 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
             cell.configure(with: task)
-        }
+            }
+        
         return cell
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Видалити") { [weak self] (_, _, completion) in
+                guard let self = self else { return }
+                
+                self.deleteTask(at: indexPath)
+                completion(true)
+            }
+        deleteAction.image = UIImage(systemName: "trash")
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        configuration.performsFirstActionWithFullSwipe = false
+        
+        return configuration
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         

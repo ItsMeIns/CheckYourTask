@@ -7,33 +7,47 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 
 
-
-class AddTaskViewController: UIViewController {
+class AddTaskViewController: UIViewController, UITextFieldDelegate {
     //MARK: - properties -
     var selectedDate: Date?
     
+    let notificationCenter = UNUserNotificationCenter.current()
    
     
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
-        
+        taskNameTextField.delegate = self
         
         if let selectedDate = selectedDate {
             datePicker.date = selectedDate
             UserDefaults.standard.set(selectedDate, forKey: "selectedDate")
         }
-        
+        //прибрати клавіатуру по тапу
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
         
         
         setupConstraints()
         
+        
+        notificationCenter.requestAuthorization(options: [.alert, .sound]) { permissionGranted, error in
+            if (!permissionGranted) {
+                print("permission denied")
+            }
+        }
+        
     }
     
+    @objc func hideKeyboard() {
+        view.endEditing(true)
+    }
     
     // - name text field -
     let taskNameTextField: UITextField = {
@@ -182,6 +196,49 @@ class AddTaskViewController: UIViewController {
         task.reminder = alertSwitch.isOn
         task.isComplete = false
         
+        //notification
+        notificationCenter.getNotificationSettings { (settings) in
+            DispatchQueue.main.async {
+                let title = self.taskNameTextField.text!
+                let message = "Зроби задачу"
+                
+                if (settings.authorizationStatus == .authorized) {
+                    let content = UNMutableNotificationContent()
+                    content.title = title
+                    content.body = message
+                    
+                    let dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: self.timePicker.date)
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
+                    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                    
+                    self.notificationCenter.add(request) { (error) in
+                        if (error != nil) {
+                            print("Error " + error.debugDescription)
+                            return
+                        }
+                    }
+                    let ac = UIAlertController(title: "Notification Scheduled", message: "At " + self.formattedDate(date: self.timePicker.date), preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in}))
+                    self.present(ac, animated: true)
+                } else {
+                    let ac = UIAlertController(title: "Enable Notification?", message: "To use this feature you must enable notifications in settings", preferredStyle: .alert)
+                    let goToSettings = UIAlertAction(title: "Settings", style: .default) { (_) in
+                        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        if (UIApplication.shared.canOpenURL(settingsURL)) {
+                            UIApplication.shared.open(settingsURL) { (_) in}
+                        }
+                    }
+                    ac.addAction(goToSettings)
+                    ac.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in}))
+                    self.present(ac, animated: true)
+                }
+            }
+            
+        }
+       
+        
         do {
             try context.save()
             if let tasksViewController = presentingViewController as? TasksViewController {
@@ -197,6 +254,11 @@ class AddTaskViewController: UIViewController {
         }
     }
 
+    func formattedDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: timePicker.date)
+    }
     
     //MARK: - constraint -
     func setupConstraints() {
