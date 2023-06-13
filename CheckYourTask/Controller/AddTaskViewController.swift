@@ -14,6 +14,7 @@ import UserNotifications
 class AddTaskViewController: UIViewController, UITextFieldDelegate {
     //MARK: - properties -
     var selectedDate: Date?
+    var  task: DataTask?
     
     let notificationCenter = UNUserNotificationCenter.current()
    
@@ -21,6 +22,8 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.hidesBackButton = true
         view.backgroundColor = UIColor(named: "Color1")
         taskNameTextField.delegate = self
         
@@ -35,7 +38,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         
         
         setupConstraints()
-        
+        updateUI()
         
         notificationCenter.requestAuthorization(options: [.alert, .sound]) { permissionGranted, error in
             if (!permissionGranted) {
@@ -196,6 +199,21 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         task.reminder = alertSwitch.isOn
         task.isComplete = false
         
+        do {
+            try context.save()
+            if let tasksViewController = presentingViewController as? TasksViewController {
+                tasksViewController.tasks.append(task)
+                tasksViewController.taskDates.append(task)
+                tasksViewController.tableView.reloadData()
+                tasksViewController.calendar.reloadData()
+                tasksViewController.updateProgress()
+            }
+            dismiss(animated: true, completion: nil)
+        } catch {
+            print("Error saving task: \(error)")
+        }
+        
+        
         //notification
         notificationCenter.getNotificationSettings { (settings) in
             DispatchQueue.main.async {
@@ -239,19 +257,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         }
        
         
-        do {
-            try context.save()
-            if let tasksViewController = presentingViewController as? TasksViewController {
-                tasksViewController.tasks.append(task)
-                tasksViewController.taskDates.append(task)
-                tasksViewController.tableView.reloadData()
-                tasksViewController.calendar.reloadData()
-                tasksViewController.updateProgress()
-            }
-            dismiss(animated: true, completion: nil)
-        } catch {
-            print("Error saving task: \(error)")
-        }
+        
     }
 
     func formattedDate(date: Date) -> String {
@@ -325,5 +331,16 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         createButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50).isActive = true
         
     }
+    
+    func updateUI() {
+        guard let task = task else { return }
+        
+        taskNameTextField.text = task.taskName
+        datePicker.date = task.date!
+        timePicker.date = task.time!
+        descriptionTextView.text = task.taskDescription
+        alertSwitch.isOn = task.reminder
+    }
+
 }
 

@@ -34,22 +34,54 @@ class DetailedViewController: UIViewController {
     }
     
     
-   
+    // task name view
+    let viewTaskName: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 8
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowOffset = CGSize(width: 2, height: 2)
+        view.layer.shadowRadius = 4
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
-    
-        
     // - task name -
     let taskName: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 26)
+        label.font = UIFont.boldSystemFont(ofSize: 26)
         label.textColor = .black
         label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
+    // - task description  view -
+    let viewTaskDescription: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 8
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowOffset = CGSize(width: 2, height: 2)
+        view.layer.shadowRadius = 4
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
+    // - task description -
+    let taskDescription: UITextView = {
+        let textView = UITextView()
+        textView.font = UIFont.systemFont(ofSize: 20)
+        textView.textColor = .black
+        textView.isEditable = false
+        textView.layer.cornerRadius = 5
+//        textView.backgroundColor = .yellow
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        return textView
+    }()
     
     
     
@@ -76,8 +108,6 @@ class DetailedViewController: UIViewController {
     @objc func cancelButtonTapped() {
         let backToTaskVC = TasksViewController()
         
-        
-        
         let transition = CATransition()
         transition.duration = 0.3
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
@@ -88,14 +118,74 @@ class DetailedViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
+    // - edit button -
+    let editButton: UIButton = {
+        let editButton = UIButton(type: .system)
+        editButton.layer.cornerRadius = 15
+        editButton.clipsToBounds = true
+        editButton.layer.borderWidth = 2
+        editButton.layer.borderColor = UIColor.black.cgColor
+        editButton.backgroundColor = UIColor(named: "ColorCreate")
+        editButton.setTitle("Edit", for: .normal)
+        editButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        editButton.setTitleColor(UIColor.black, for: .normal)
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        
+        editButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
+        return editButton
+    }()
+    
+    @objc func editButtonPressed() {
+        
+        let addTaskVC = AddTaskViewController()
+        addTaskVC.task = task
+        
+        navigationController?.pushViewController(addTaskVC, animated: true)
+        
+    }
+    
     //MARK: - constraint -
     func setupConstraints() {
+        //task name view
+        view.addSubview(viewTaskName)
+        viewTaskName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        viewTaskName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        viewTaskName.topAnchor.constraint(equalTo: view.topAnchor, constant:  100).isActive = true
         
-        //date label
-        view.addSubview(taskName)
-        taskName.topAnchor.constraint(equalTo: view.topAnchor, constant: 60).isActive = true
-        taskName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        taskName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
+        let heightConstraint = viewTaskName.heightAnchor.constraint(equalToConstant: 60)
+        heightConstraint.priority = .defaultLow
+        heightConstraint.isActive = true
+            
+        let fittingHeight = viewTaskName.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        heightConstraint.constant = fittingHeight
+        
+        //task name
+        viewTaskName.addSubview(taskName)
+        taskName.leadingAnchor.constraint(equalTo: viewTaskName.leadingAnchor, constant: 8).isActive = true
+        taskName.trailingAnchor.constraint(equalTo: viewTaskName.trailingAnchor, constant: -8).isActive = true
+        taskName.topAnchor.constraint(equalTo: viewTaskName.topAnchor, constant: 16).isActive = true
+        taskName.bottomAnchor.constraint(equalTo: viewTaskName.bottomAnchor, constant: -16).isActive = true
+        
+        
+        
+        //task description  view
+        view.addSubview(viewTaskDescription)
+        viewTaskDescription.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        viewTaskDescription.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        viewTaskDescription.topAnchor.constraint(equalTo: viewTaskName.bottomAnchor, constant:  24).isActive = true
+        viewTaskDescription.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        
+        
+        
+        
+        //task description
+        viewTaskDescription.addSubview(taskDescription)
+        taskDescription.topAnchor.constraint(equalTo: viewTaskDescription.topAnchor, constant: 8).isActive = true
+        taskDescription.bottomAnchor.constraint(equalTo: viewTaskDescription.bottomAnchor, constant: -8).isActive = true
+        taskDescription.leadingAnchor.constraint(equalTo: viewTaskDescription.leadingAnchor, constant: 8).isActive = true
+        taskDescription.trailingAnchor.constraint(equalTo: viewTaskDescription.trailingAnchor, constant: -8).isActive = true
         
         
         
@@ -107,10 +197,18 @@ class DetailedViewController: UIViewController {
         cancelButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
         cancelButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
         cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50).isActive = true
+        
+        //edit button
+        view.addSubview(editButton)
+        editButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        editButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        editButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
+        editButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50).isActive = true
     }
     
     func updateUI() {
         taskName.text = task?.taskName
+        taskDescription.text = task?.taskDescription
     }
 }
 
