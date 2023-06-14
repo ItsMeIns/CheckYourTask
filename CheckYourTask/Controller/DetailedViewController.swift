@@ -13,26 +13,16 @@ class DetailedViewController: UIViewController {
     var task: DataTask?
     
     
-    
-    
-    
-    
-    
-    
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
         
         
-        
         setupConstraints()
         updateUI()
         
-        
-       
     }
-    
     
     // task name view
     let viewTaskName: UIView = {
@@ -78,15 +68,9 @@ class DetailedViewController: UIViewController {
         textView.textColor = .black
         textView.isEditable = false
         textView.layer.cornerRadius = 5
-//        textView.backgroundColor = .yellow
         textView.translatesAutoresizingMaskIntoConstraints = false
         return textView
     }()
-    
-    
-    
-    
-    
     
     // - cancel button -
     let cancelButton: UIButton = {
@@ -100,19 +84,16 @@ class DetailedViewController: UIViewController {
         cancelButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         cancelButton.setTitleColor(UIColor.black, for: .normal)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        
         cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         return cancelButton
     }()
     
     @objc func cancelButtonTapped() {
         let backToTaskVC = TasksViewController()
-        
         let transition = CATransition()
         transition.duration = 0.3
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         transition.type = CATransitionType.fade
-        
         navigationController?.view.layer.add(transition, forKey: nil)
         navigationController?.pushViewController(backToTaskVC, animated: false)
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -130,22 +111,15 @@ class DetailedViewController: UIViewController {
         editButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         editButton.setTitleColor(UIColor.black, for: .normal)
         editButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        
-        
         editButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
         return editButton
     }()
     
     @objc func editButtonPressed() {
-        
         let addTaskVC = AddTaskViewController()
         addTaskVC.task = task
         addTaskVC.isEditMode = true //2
-        
-        
         navigationController?.pushViewController(addTaskVC, animated: true)
-        
     }
     
     //MARK: - constraint -
@@ -155,11 +129,9 @@ class DetailedViewController: UIViewController {
         viewTaskName.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         viewTaskName.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
         viewTaskName.topAnchor.constraint(equalTo: view.topAnchor, constant:  100).isActive = true
-        
         let heightConstraint = viewTaskName.heightAnchor.constraint(equalToConstant: 60)
         heightConstraint.priority = .defaultLow
         heightConstraint.isActive = true
-            
         let fittingHeight = viewTaskName.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
         heightConstraint.constant = fittingHeight
         
@@ -170,8 +142,6 @@ class DetailedViewController: UIViewController {
         taskName.topAnchor.constraint(equalTo: viewTaskName.topAnchor, constant: 16).isActive = true
         taskName.bottomAnchor.constraint(equalTo: viewTaskName.bottomAnchor, constant: -16).isActive = true
         
-        
-        
         //task description  view
         view.addSubview(viewTaskDescription)
         viewTaskDescription.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
@@ -179,19 +149,12 @@ class DetailedViewController: UIViewController {
         viewTaskDescription.topAnchor.constraint(equalTo: viewTaskName.bottomAnchor, constant:  24).isActive = true
         viewTaskDescription.heightAnchor.constraint(equalToConstant: 300).isActive = true
         
-        
-        
-        
         //task description
         viewTaskDescription.addSubview(taskDescription)
         taskDescription.topAnchor.constraint(equalTo: viewTaskDescription.topAnchor, constant: 8).isActive = true
         taskDescription.bottomAnchor.constraint(equalTo: viewTaskDescription.bottomAnchor, constant: -8).isActive = true
         taskDescription.leadingAnchor.constraint(equalTo: viewTaskDescription.leadingAnchor, constant: 8).isActive = true
         taskDescription.trailingAnchor.constraint(equalTo: viewTaskDescription.trailingAnchor, constant: -8).isActive = true
-        
-        
-        
-        
         
         //cancel button
         view.addSubview(cancelButton)

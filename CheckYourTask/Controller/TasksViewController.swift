@@ -23,8 +23,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var calendarScope: FSCalendarScope = .month
     let notificationCenter = UNUserNotificationCenter.current()
     
-    
-    
     // - FSCalendar properties -
     let calendar = FSCalendar()
     fileprivate let gregorian: Calendar = Calendar(identifier: .gregorian)
@@ -35,10 +33,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }()
     
     //MARK: - content -
-    
     var tasks: [DataTask] = []
     var taskDates: [DataTask] = []
-    
     
     //MARK: - life cycle -
     override func viewDidLoad() {
@@ -46,8 +42,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         view.backgroundColor = UIColor(named: "Color1")
         taskView.taskViewController = self
         notificationCenter.delegate = self
-        
-        
         callSettings()
         callAddTask()
         taskView.setupConstraints()
@@ -69,7 +63,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         if let selectedDate = UserDefaults.standard.object(forKey: "selectedDate") as? Date {
             calendar.select(selectedDate)
         }
@@ -93,22 +86,16 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     //delete task
     func deleteTask(at indexPath: IndexPath) {
         let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
-        
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
-            
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 let context = appDelegate.persistentContainer.viewContext
                 context.delete(task)
-                
-                
-                
                 if let notificationId = task.notificationId {
-                   self.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationId])
+                    self.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationId])
                 }
                 appDelegate.saveContext()
             }
-            
             fetchTaskDatesFromCoreData()
             updateTasksForSelectedDate()
             tableView.reloadData()
@@ -117,17 +104,12 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
-    
-    
-
-    
     //- progress bar -
     func updateProgress() {
         let tasksForSelectedDate = tasks.filter {
             $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
         }
         completedTasks = tasksForSelectedDate.filter { $0.isComplete }.count
-        
         if tasksForSelectedDate.count > 0 {
             let percentage = Int((Float(completedTasks) / Float(tasksForSelectedDate.count)) * 100)
             taskView.percentagesMadeLayer.text = "\(percentage)%"
@@ -153,12 +135,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     @objc func addTask() {
         print("add button pressed")
-        
         let addTaskVC = AddTaskViewController()
         addTaskVC.selectedDate = calendar.selectedDate
-        
-        
-        
         let navigationController = UINavigationController(rootViewController: addTaskVC)
         navigationController.modalPresentationStyle = .fullScreen
         navigationController.modalTransitionStyle = .crossDissolve
@@ -168,10 +146,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     // - add FSCalendar -
     func addCalendar() {
         calendar.translatesAutoresizingMaskIntoConstraints = false
-        calendar.firstWeekday = 2
-        
         calendar.delegate = self
         calendar.dataSource = self
+        calendar.firstWeekday = 2
         calendar.appearance.headerDateFormat = "LLLL yyyy"
         calendar.appearance.titleFont = UIFont.systemFont(ofSize: 18)
         calendar.appearance.headerTitleFont = UIFont.boldSystemFont(ofSize: 20)
@@ -181,8 +158,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.appearance.selectionColor = .black
         calendar.placeholderType = .none
         calendar.appearance.headerMinimumDissolvedAlpha = 0
-        
-        
         calendar.scope = calendarScope
         
         if let savedScopeValue = UserDefaults.standard.value(forKey: "calendarScope") as? Int,
@@ -192,10 +167,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             calendar.scope = .month
         }
         
-        
         view.addSubview(calendar)
-        
-        
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -211,13 +183,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             print("Помилка під час витягування задач з Core Data: \(error)")
         }
         
-        
         updateTasksForSelectedDate()
         tableView.reloadData()
         calendar.reloadData()
-        
-        
-        
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeUpGesture.direction = .up
         calendar.addGestureRecognizer(swipeUpGesture)
@@ -239,10 +207,12 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 UserDefaults.standard.set(calendar.scope.rawValue, forKey: "calendarScope")
             }
         }
+        
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
     }
+    
     // - constraint calendar -
     func calendarConstraints() {
         view.addSubview(calendar)
@@ -252,7 +222,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.topAnchor.constraint(equalTo: view.topAnchor, constant: 180).isActive = true
         calendar.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0).isActive = true
         calendar.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        
         tableViewTopConstraint = tableView.topAnchor.constraint(equalTo: calendar.bottomAnchor, constant: 8)
         tableViewTopConstraint.isActive = true
     }
@@ -264,7 +233,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.dataSource = self
         tableView.register(TaskTableViewCell.self, forCellReuseIdentifier: "Cell")
         view.addSubview(tableView)
-        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
@@ -277,55 +245,40 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return tasksForSelectedDate.count
     }
     
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TaskTableViewCell
-        
         cell.tasksViewController = self
-        
         let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
-        
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
             cell.configure(with: task)
-            }
-        
+        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
         let deleteAction = UIContextualAction(style: .destructive, title: "Видалити") { [weak self] (_, _, completion) in
-                guard let self = self else { return }
-                
-                self.deleteTask(at: indexPath)
-                completion(true)
-            }
+            guard let self = self else { return }
+            
+            self.deleteTask(at: indexPath)
+            completion(true)
+        }
         deleteAction.image = UIImage(systemName: "trash")
-        
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         configuration.performsFirstActionWithFullSwipe = false
-        
         return configuration
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         let tasksForSelectedDate = tasks.filter {
             $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
         }
         
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
-            
             let detailVC = DetailedViewController()
             detailVC.task = task
-            
-            
-            
-            
             let navigationController = UINavigationController(rootViewController: detailVC)
             navigationController.modalPresentationStyle = .fullScreen
             navigationController.modalTransitionStyle = .crossDissolve
@@ -354,9 +307,6 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         updateTasksForSelectedDate()
         tableView.reloadData()
         updateProgress()
-        
-        
-        
     }
     
     func updateTasksForSelectedDate() {
@@ -386,8 +336,6 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         calendarHeightConstraint.constant = bounds.height
         view.layoutIfNeeded()
     }
-    
-    
 }
 
 

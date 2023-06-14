@@ -13,204 +13,95 @@ import UserNotifications
 
 class AddTaskViewController: UIViewController, UITextFieldDelegate {
     //MARK: - properties -
+    let addTaskView = AddTaskView()
     var selectedDate: Date?
     var task: DataTask?
-    
     let notificationCenter = UNUserNotificationCenter.current()
+    var isEditMode = false
     
-    var isEditMode = false //1
-   
     
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.hidesBackButton = true
         view.backgroundColor = UIColor(named: "Color1")
-        taskNameTextField.delegate = self
+        navigationItem.hidesBackButton = true
         
-        if let selectedDate = selectedDate {
-            datePicker.date = selectedDate
-            UserDefaults.standard.set(selectedDate, forKey: "selectedDate")
-        }
-        
-        
-        
-        
-        //прибрати клавіатуру по тапу
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
-        
+        addTaskView.addTaskViewController = self
+        addTaskView.taskNameTextField.delegate = self
         
         setupConstraints()
         updateUI()
+        callSettings()
         
         
+    }
+    
+    //MARK: - intents -
+    private func callSettings() {
+        //натискання кнопки назад
+        addTaskView.cancelButton.addTarget(AddTaskViewController(), action: #selector(cancelButtonTapped), for: .touchUpInside)
         
+        //перемикач edit/create
+        if isEditMode {
+            title = "Edit Task"
+            addTaskView.createButton.setTitle("Edit", for: .normal)
+            addTaskView.createButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
+        } else {
+            title = "Create Task"
+            addTaskView.createButton.setTitle("Create", for: .normal)
+            addTaskView.createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
+        }
         
+        //нагадування
         notificationCenter.requestAuthorization(options: [.alert, .sound]) { permissionGranted, error in
             if (!permissionGranted) {
                 print("permission denied")
             }
         }
         
+        //прибрати клавіатуру по тапу
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
         
-        
-        if isEditMode {
-            title = "Edit Task"
-            createButton.setTitle("Edit", for: .normal)
-            createButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
-        } else {
-            title = "Create Task"
-            createButton.setTitle("Create", for: .normal)
-            createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
+        //запам‘ятовує обрану дату, та обирає одразу її у datePicker
+        if let selectedDate = selectedDate {
+            addTaskView.datePicker.date = selectedDate
+            UserDefaults.standard.set(selectedDate, forKey: "selectedDate")
         }
-        
     }
     
+    //ховає клавіатуру
     @objc func hideKeyboard() {
         view.endEditing(true)
     }
     
-    // - name text field -
-    let taskNameTextField: UITextField = {
-        let taskName = UITextField()
-        taskName.backgroundColor = .white
-        taskName.placeholder = "Task name"
-        taskName.layer.cornerRadius = 5
-        let leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
-        taskName.leftView = leftView
-        taskName.leftViewMode = .always
-        taskName.translatesAutoresizingMaskIntoConstraints = false
-        return taskName
-    }()
-    
-    // - date label -
-    let dateLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Date"
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = .black
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    // - date picker -
-    let datePicker: UIDatePicker = {
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        datePicker.translatesAutoresizingMaskIntoConstraints = false
-        return datePicker
-    }()
-    
-    // - time label -
-    let timeLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Time"
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = .black
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    // - time picker -
-    let timePicker: UIDatePicker = {
-        let timePicker = UIDatePicker()
-        timePicker.datePickerMode = .time
-        timePicker.locale = Locale(identifier: "en_GB")
-        timePicker.translatesAutoresizingMaskIntoConstraints = false
-        return timePicker
-    }()
-    
-    // - description text view -
-    let descriptionTextView: UITextView = {
-        let textView = UITextView()
-        textView.backgroundColor = .white
-        textView.font = UIFont.systemFont(ofSize: 16)
-        textView.layer.cornerRadius = 5
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        return textView
-    }()
-    
-    // - alert label -
-    let alertLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Alert"
-        label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = .black
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    // - alert switch -
-    let alertSwitch: UISwitch = {
-        let alertSwitch = UISwitch()
-        alertSwitch.isOn = false
-        alertSwitch.translatesAutoresizingMaskIntoConstraints = false
-        return alertSwitch
-    }()
-    
-    
-    // - cancel button -
-    let cancelButton: UIButton = {
-        let cancelButton = UIButton(type: .system)
-        cancelButton.layer.cornerRadius = 15
-        cancelButton.clipsToBounds = true
-        cancelButton.layer.borderWidth = 2
-        cancelButton.layer.borderColor = UIColor.black.cgColor
-        cancelButton.backgroundColor = UIColor(named: "ColorCancel")
-        cancelButton.setTitle("Cancel", for: .normal)
-        cancelButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        cancelButton.setTitleColor(UIColor.black, for: .normal)
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
-        return cancelButton
-    }()
-    
+    //натискання кнопки назад
     @objc func cancelButtonTapped() {
         let backToTaskVC = TasksViewController()
         let transition = CATransition()
         transition.duration = 0.3
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         transition.type = CATransitionType.fade
-        
         navigationController?.view.layer.add(transition, forKey: nil)
         navigationController?.pushViewController(backToTaskVC, animated: false)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    // - create button -
-    let createButton: UIButton = {
-        let createButton = UIButton(type: .system)
-        createButton.layer.cornerRadius = 15
-        createButton.clipsToBounds = true
-        createButton.layer.borderWidth = 2
-        createButton.layer.borderColor = UIColor.black.cgColor
-        createButton.backgroundColor = UIColor(named: "ColorCreate")
-        createButton.setTitle("Create", for: .normal)
-        createButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        createButton.setTitleColor(UIColor.black, for: .normal)
-        createButton.translatesAutoresizingMaskIntoConstraints = false
-        
-//        createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
-        return createButton
-    }()
-    
+    //натискання кнопки редагувати
     @objc func editButtonPressed() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
         
         let context = appDelegate.persistentContainer.viewContext
-        
         if let editedTask = task {
-            editedTask.taskName = taskNameTextField.text
-            editedTask.taskDescription = descriptionTextView.text
-            editedTask.date = datePicker.date
-            editedTask.time = timePicker.date
-            editedTask.reminder = alertSwitch.isOn
+            editedTask.taskName = addTaskView.taskNameTextField.text
+            editedTask.taskDescription = addTaskView.descriptionTextView.text
+            editedTask.date = addTaskView.datePicker.date
+            editedTask.time = addTaskView.timePicker.date
+            editedTask.reminder = addTaskView.alertSwitch.isOn
             editedTask.isComplete = false
             
             do {
@@ -228,22 +119,19 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         
         //notification
         let calendar = Calendar.current
-        let selectedDate = datePicker.date
-        let selectedTime = timePicker.date
+        let selectedDate = addTaskView.datePicker.date
+        let selectedTime = addTaskView.timePicker.date
         let notificationId = UUID().uuidString
         task?.notificationId = notificationId
         
         notificationCenter.getNotificationSettings { (settings) in
             DispatchQueue.main.async {
                 let title = "CheckYourTask"
-                let message = self.taskNameTextField.text!
-                
-                
+                let message = self.addTaskView.taskNameTextField.text!
                 if (settings.authorizationStatus == .authorized) {
                     let content = UNMutableNotificationContent()
                     content.title = title
                     content.body = message
-                    
                     var dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: selectedDate)
                     dateComp.year = calendar.component(.year, from: selectedDate)
                     dateComp.month = calendar.component(.month, from: selectedDate)
@@ -251,11 +139,8 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                     dateComp.hour = calendar.component(.hour, from: selectedTime)
                     dateComp.minute = calendar.component(.minute, from: selectedTime)
                     
-                    
-                    
                     let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
                     let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
-                    
                     self.notificationCenter.add(request) { (error) in
                         if (error != nil) {
                             print("Error " + error.debugDescription)
@@ -281,11 +166,10 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                     self.present(ac, animated: true)
                 }
             }
-            
         }
     }
-
     
+    //натискання кнопки створити
     @objc func createButtonPressed() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
@@ -297,16 +181,12 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         }
         
         let task = DataTask(entity: entityDescription, insertInto: context)
-        task.taskName = taskNameTextField.text
-        task.taskDescription = descriptionTextView.text
-        task.date = datePicker.date
-        task.time = timePicker.date
-        task.reminder = alertSwitch.isOn
+        task.taskName = addTaskView.taskNameTextField.text
+        task.taskDescription = addTaskView.descriptionTextView.text
+        task.date = addTaskView.datePicker.date
+        task.time = addTaskView.timePicker.date
+        task.reminder = addTaskView.alertSwitch.isOn
         task.isComplete = false
-        
-        
-        
-        
         
         do {
             try context.save()
@@ -322,25 +202,21 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             print("Error saving task: \(error)")
         }
         
-        
         //notification
         let calendar = Calendar.current
-        let selectedDate = datePicker.date
-        let selectedTime = timePicker.date
+        let selectedDate = addTaskView.datePicker.date
+        let selectedTime = addTaskView.timePicker.date
         let notificationId = UUID().uuidString
         task.notificationId = notificationId
         
         notificationCenter.getNotificationSettings { (settings) in
             DispatchQueue.main.async {
                 let title = "CheckYourTask"
-                let message = self.taskNameTextField.text!
-                
-                
+                let message = self.addTaskView.taskNameTextField.text!
                 if (settings.authorizationStatus == .authorized) {
                     let content = UNMutableNotificationContent()
                     content.title = title
                     content.body = message
-                    
                     var dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: selectedDate)
                     dateComp.year = calendar.component(.year, from: selectedDate)
                     dateComp.month = calendar.component(.month, from: selectedDate)
@@ -348,11 +224,8 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                     dateComp.hour = calendar.component(.hour, from: selectedTime)
                     dateComp.minute = calendar.component(.minute, from: selectedTime)
                     
-                    
-                    
                     let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
                     let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
-                    
                     self.notificationCenter.add(request) { (error) in
                         if (error != nil) {
                             print("Error " + error.debugDescription)
@@ -378,91 +251,87 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                     self.present(ac, animated: true)
                 }
             }
-            
         }
     }
-
+    
     func formattedDate(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        return formatter.string(from: timePicker.date)
+        return formatter.string(from: addTaskView.timePicker.date)
     }
     
     //MARK: - constraint -
     func setupConstraints() {
         //name textfield
-        view.addSubview(taskNameTextField)
-        taskNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        taskNameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 80
+        view.addSubview(addTaskView.taskNameTextField)
+        addTaskView.taskNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        addTaskView.taskNameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 80
         ).isActive = true
-        taskNameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        taskNameTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        addTaskView.taskNameTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        addTaskView.taskNameTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         
         //date label
-        view.addSubview(dateLabel)
-        dateLabel.topAnchor.constraint(equalTo: taskNameTextField.bottomAnchor, constant: 25).isActive = true
-        dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        view.addSubview(addTaskView.dateLabel)
+        addTaskView.dateLabel.topAnchor.constraint(equalTo: addTaskView.taskNameTextField.bottomAnchor, constant: 25).isActive = true
+        addTaskView.dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         
         //date picker
-        view.addSubview(datePicker)
-        datePicker.topAnchor.constraint(equalTo: taskNameTextField.bottomAnchor, constant: 20).isActive = true
-        datePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        datePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        view.addSubview(addTaskView.datePicker)
+        addTaskView.datePicker.topAnchor.constraint(equalTo: addTaskView.taskNameTextField.bottomAnchor, constant: 20).isActive = true
+        addTaskView.datePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        addTaskView.datePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         
         //time label
-        view.addSubview(timeLabel)
-        timeLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 25).isActive = true
-        timeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        view.addSubview(addTaskView.timeLabel)
+        addTaskView.timeLabel.topAnchor.constraint(equalTo: addTaskView.dateLabel.bottomAnchor, constant: 25).isActive = true
+        addTaskView.timeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         
         //time picker
-        view.addSubview(timePicker)
-        timePicker.topAnchor.constraint(equalTo: datePicker.bottomAnchor, constant: 8).isActive = true
-        timePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        timePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        view.addSubview(addTaskView.timePicker)
+        addTaskView.timePicker.topAnchor.constraint(equalTo: addTaskView.datePicker.bottomAnchor, constant: 8).isActive = true
+        addTaskView.timePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        addTaskView.timePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         
         //description text view
-        view.addSubview(descriptionTextView)
-        descriptionTextView.topAnchor.constraint(equalTo: timePicker.bottomAnchor, constant: 20).isActive = true
-        descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
-        descriptionTextView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -400).isActive = true
+        view.addSubview(addTaskView.descriptionTextView)
+        addTaskView.descriptionTextView.topAnchor.constraint(equalTo: addTaskView.timePicker.bottomAnchor, constant: 20).isActive = true
+        addTaskView.descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        addTaskView.descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        addTaskView.descriptionTextView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -400).isActive = true
         
         //alert label
-        view.addSubview(alertLabel)
-        alertLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 25).isActive = true
-        alertLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
+        view.addSubview(addTaskView.alertLabel)
+        addTaskView.alertLabel.topAnchor.constraint(equalTo: addTaskView.descriptionTextView.bottomAnchor, constant: 25).isActive = true
+        addTaskView.alertLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         
         //alert picker
-        view.addSubview(alertSwitch)
-        alertSwitch.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
-        alertSwitch.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
-        
+        view.addSubview(addTaskView.alertSwitch)
+        addTaskView.alertSwitch.topAnchor.constraint(equalTo: addTaskView.descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        addTaskView.alertSwitch.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         
         //cancel button
-        view.addSubview(cancelButton)
-        cancelButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        cancelButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
-        cancelButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
-        cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50).isActive = true
+        view.addSubview(addTaskView.cancelButton)
+        addTaskView.cancelButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        addTaskView.cancelButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        addTaskView.cancelButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
+        addTaskView.cancelButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 50).isActive = true
         
         //create button
-        view.addSubview(createButton)
-        createButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        createButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
-        createButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
-        createButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50).isActive = true
-        
+        view.addSubview(addTaskView.createButton)
+        addTaskView.createButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        addTaskView.createButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        addTaskView.createButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
+        addTaskView.createButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -50).isActive = true
     }
     
     func updateUI() {
         guard let task = task else { return }
-        
-        taskNameTextField.text = task.taskName
-        datePicker.date = task.date!
-        timePicker.date = task.time!
-        descriptionTextView.text = task.taskDescription
-        alertSwitch.isOn = task.reminder
+        addTaskView.taskNameTextField.text = task.taskName
+        addTaskView.datePicker.date = task.date!
+        addTaskView.timePicker.date = task.time!
+        addTaskView.descriptionTextView.text = task.taskDescription
+        addTaskView.alertSwitch.isOn = task.reminder
     }
-
+    
 }
 
