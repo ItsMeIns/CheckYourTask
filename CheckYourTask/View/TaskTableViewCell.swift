@@ -82,10 +82,29 @@ class TaskTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-//            // Ігноруємо натискання в інших частинах комірки, окрім області checkBoxButton
-//            return checkBoxButton.frame.contains(point)
+//    @objc func checkBoxButtonTapped() {
+//        checkBoxButton.isSelected = !checkBoxButton.isSelected
+//        if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+//           let tasksViewController = tasksViewController,
+//           let indexPath = tasksViewController.tableView.indexPath(for: self) {
+//            let task = tasksViewController.tasks[indexPath.row]
+//
+//
+//
+//            task.isComplete = checkBoxButton.isSelected
+//
+//            do {
+//                let context = appDelegate.persistentContainer.viewContext
+//                try context.save() // Зберегти зміни в контексті Core Data
+//                tasksViewController.updateProgress()
+//                tasksViewController.tableView.reloadData()
+//                print("натиснув чек")
+//            } catch {
+//                print("Error saving task: \(error)")
+//            }
 //        }
+//    }
+    
     
     @objc func checkBoxButtonTapped() {
         checkBoxButton.isSelected = !checkBoxButton.isSelected
@@ -93,25 +112,31 @@ class TaskTableViewCell: UITableViewCell {
            let tasksViewController = tasksViewController,
            let indexPath = tasksViewController.tableView.indexPath(for: self) {
             let task = tasksViewController.tasks[indexPath.row]
+            
+            if checkBoxButton.isSelected {
+                if let notificationId = task.notificationId {
+                    tasksViewController.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationId])
+                    task.notificationId = nil
+                }
+                task.reminder = false
+            }
+            
             task.isComplete = checkBoxButton.isSelected
             
             do {
                 let context = appDelegate.persistentContainer.viewContext
-                try context.save() // Зберегти зміни в контексті Core Data
+                try context.save()
                 tasksViewController.updateProgress()
                 tasksViewController.tableView.reloadData()
+                print("Натиснуто чекбокс")
             } catch {
-                print("Error saving task: \(error)")
+                print("Помилка при збереженні задачі: \(error)")
             }
         }
     }
 
-
-
-
-
-
-
+    
+    
     
     func configure(with task: DataTask) {
         nameLabel.text = task.taskName

@@ -8,10 +8,10 @@
 import UIKit
 import FSCalendar
 import CoreData
+import UserNotifications
 
 
-
-class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UNUserNotificationCenterDelegate {
     
     //MARK: - properties -
     let taskView = TaskView()
@@ -21,6 +21,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var tableViewTopConstraint: NSLayoutConstraint!
     var calendarHeightConstraint: NSLayoutConstraint!
     var calendarScope: FSCalendarScope = .month
+    let notificationCenter = UNUserNotificationCenter.current()
     
     
     
@@ -44,7 +45,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
         taskView.taskViewController = self
-        
+        notificationCenter.delegate = self
         
         
         callSettings()
@@ -99,6 +100,12 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
                 let context = appDelegate.persistentContainer.viewContext
                 context.delete(task)
+                
+                
+                
+                if let notificationId = task.notificationId {
+                   self.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationId])
+                }
                 appDelegate.saveContext()
             }
             
@@ -109,6 +116,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             updateProgress()
         }
     }
+    
+    
+    
 
     
     //- progress bar -

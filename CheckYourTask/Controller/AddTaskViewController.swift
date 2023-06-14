@@ -14,9 +14,11 @@ import UserNotifications
 class AddTaskViewController: UIViewController, UITextFieldDelegate {
     //MARK: - properties -
     var selectedDate: Date?
-    var  task: DataTask?
+    var task: DataTask?
     
     let notificationCenter = UNUserNotificationCenter.current()
+    
+    var isEditMode = false //1
    
     
     //MARK: - life cycle -
@@ -31,6 +33,10 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             datePicker.date = selectedDate
             UserDefaults.standard.set(selectedDate, forKey: "selectedDate")
         }
+        
+        
+        
+        
         //прибрати клавіатуру по тапу
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         tapGesture.cancelsTouchesInView = false
@@ -40,10 +46,25 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         setupConstraints()
         updateUI()
         
+        
+        
+        
         notificationCenter.requestAuthorization(options: [.alert, .sound]) { permissionGranted, error in
             if (!permissionGranted) {
                 print("permission denied")
             }
+        }
+        
+        
+        
+        if isEditMode {
+            title = "Edit Task"
+            createButton.setTitle("Edit", for: .normal)
+            createButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
+        } else {
+            title = "Create Task"
+            createButton.setTitle("Create", for: .normal)
+            createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
         }
         
     }
@@ -173,61 +194,67 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         createButton.setTitleColor(UIColor.black, for: .normal)
         createButton.translatesAutoresizingMaskIntoConstraints = false
         
-        
-        
-        createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
+//        createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
         return createButton
     }()
     
-    @objc func createButtonPressed() {
+    @objc func editButtonPressed() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
         
         let context = appDelegate.persistentContainer.viewContext
-        guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context) else {
-            return
-        }
         
-        
-        
-        let task = DataTask(entity: entityDescription, insertInto: context)
-        task.taskName = taskNameTextField.text
-        task.taskDescription = descriptionTextView.text
-        task.date = datePicker.date
-        task.time = timePicker.date
-        task.reminder = alertSwitch.isOn
-        task.isComplete = false
-        
-        do {
-            try context.save()
-            if let tasksViewController = presentingViewController as? TasksViewController {
-                tasksViewController.tasks.append(task)
-                tasksViewController.taskDates.append(task)
-                tasksViewController.tableView.reloadData()
-                tasksViewController.calendar.reloadData()
-                tasksViewController.updateProgress()
+        if let editedTask = task {
+            editedTask.taskName = taskNameTextField.text
+            editedTask.taskDescription = descriptionTextView.text
+            editedTask.date = datePicker.date
+            editedTask.time = timePicker.date
+            editedTask.reminder = alertSwitch.isOn
+            editedTask.isComplete = false
+            
+            do {
+                try context.save()
+                if let tasksViewController = presentingViewController as? TasksViewController {
+                    tasksViewController.tableView.reloadData()
+                    tasksViewController.calendar.reloadData()
+                    tasksViewController.updateProgress()
+                }
+                dismiss(animated: true, completion: nil)
+            } catch {
+                print("Error saving task: \(error)")
             }
-            dismiss(animated: true, completion: nil)
-        } catch {
-            print("Error saving task: \(error)")
         }
-        
         
         //notification
+        let calendar = Calendar.current
+        let selectedDate = datePicker.date
+        let selectedTime = timePicker.date
+        let notificationId = UUID().uuidString
+        task?.notificationId = notificationId
+        
         notificationCenter.getNotificationSettings { (settings) in
             DispatchQueue.main.async {
-                let title = self.taskNameTextField.text!
-                let message = "Зроби задачу"
+                let title = "CheckYourTask"
+                let message = self.taskNameTextField.text!
+                
                 
                 if (settings.authorizationStatus == .authorized) {
                     let content = UNMutableNotificationContent()
                     content.title = title
                     content.body = message
                     
-                    let dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: self.timePicker.date)
+                    var dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: selectedDate)
+                    dateComp.year = calendar.component(.year, from: selectedDate)
+                    dateComp.month = calendar.component(.month, from: selectedDate)
+                    dateComp.day = calendar.component(.day, from: selectedDate)
+                    dateComp.hour = calendar.component(.hour, from: selectedTime)
+                    dateComp.minute = calendar.component(.minute, from: selectedTime)
+                    
+                    
+                    
                     let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
-                    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                    let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
                     
                     self.notificationCenter.add(request) { (error) in
                         if (error != nil) {
@@ -235,7 +262,8 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                             return
                         }
                     }
-                    let ac = UIAlertController(title: "Notification Scheduled", message: "At " + self.formattedDate(date: self.timePicker.date), preferredStyle: .alert)
+                    
+                    let ac = UIAlertController(title: "Notification Scheduled", message: "At " + self.formattedDate(date: selectedDate), preferredStyle: .alert)
                     ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in}))
                     self.present(ac, animated: true)
                 } else {
@@ -255,9 +283,103 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             }
             
         }
-       
+    }
+
+    
+    @objc func createButtonPressed() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let context = appDelegate.persistentContainer.viewContext
+        guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context) else {
+            return
+        }
+        
+        let task = DataTask(entity: entityDescription, insertInto: context)
+        task.taskName = taskNameTextField.text
+        task.taskDescription = descriptionTextView.text
+        task.date = datePicker.date
+        task.time = timePicker.date
+        task.reminder = alertSwitch.isOn
+        task.isComplete = false
         
         
+        
+        
+        
+        do {
+            try context.save()
+            if let tasksViewController = presentingViewController as? TasksViewController {
+                tasksViewController.tasks.append(task)
+                tasksViewController.taskDates.append(task)
+                tasksViewController.tableView.reloadData()
+                tasksViewController.calendar.reloadData()
+                tasksViewController.updateProgress()
+            }
+            dismiss(animated: true, completion: nil)
+        } catch {
+            print("Error saving task: \(error)")
+        }
+        
+        
+        //notification
+        let calendar = Calendar.current
+        let selectedDate = datePicker.date
+        let selectedTime = timePicker.date
+        let notificationId = UUID().uuidString
+        task.notificationId = notificationId
+        
+        notificationCenter.getNotificationSettings { (settings) in
+            DispatchQueue.main.async {
+                let title = "CheckYourTask"
+                let message = self.taskNameTextField.text!
+                
+                
+                if (settings.authorizationStatus == .authorized) {
+                    let content = UNMutableNotificationContent()
+                    content.title = title
+                    content.body = message
+                    
+                    var dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: selectedDate)
+                    dateComp.year = calendar.component(.year, from: selectedDate)
+                    dateComp.month = calendar.component(.month, from: selectedDate)
+                    dateComp.day = calendar.component(.day, from: selectedDate)
+                    dateComp.hour = calendar.component(.hour, from: selectedTime)
+                    dateComp.minute = calendar.component(.minute, from: selectedTime)
+                    
+                    
+                    
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
+                    let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
+                    
+                    self.notificationCenter.add(request) { (error) in
+                        if (error != nil) {
+                            print("Error " + error.debugDescription)
+                            return
+                        }
+                    }
+                    
+                    let ac = UIAlertController(title: "Notification Scheduled", message: "At " + self.formattedDate(date: selectedDate), preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in}))
+                    self.present(ac, animated: true)
+                } else {
+                    let ac = UIAlertController(title: "Enable Notification?", message: "To use this feature you must enable notifications in settings", preferredStyle: .alert)
+                    let goToSettings = UIAlertAction(title: "Settings", style: .default) { (_) in
+                        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                            return
+                        }
+                        if (UIApplication.shared.canOpenURL(settingsURL)) {
+                            UIApplication.shared.open(settingsURL) { (_) in}
+                        }
+                    }
+                    ac.addAction(goToSettings)
+                    ac.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in}))
+                    self.present(ac, animated: true)
+                }
+            }
+            
+        }
     }
 
     func formattedDate(date: Date) -> String {

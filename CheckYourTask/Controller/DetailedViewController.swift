@@ -141,6 +141,8 @@ class DetailedViewController: UIViewController {
         
         let addTaskVC = AddTaskViewController()
         addTaskVC.task = task
+        addTaskVC.isEditMode = true //2
+        
         
         navigationController?.pushViewController(addTaskVC, animated: true)
         
