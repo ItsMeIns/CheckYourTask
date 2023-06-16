@@ -31,43 +31,70 @@ class TaskTableViewCell: UITableViewCell {
         return button
     }()
     
+    let cellContentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.3
+        view.layer.shadowOffset = CGSize(width: 0, height: 0)
+        view.layer.shadowRadius = 3
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super .init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = UIColor(named: "Color2")
+        
         nameLabel.font = UIFont.systemFont(ofSize: 16)
         nameLabel.textColor = UIColor.black
         nameLabel.numberOfLines = 0
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(nameLabel)
+        cellContentView.backgroundColor = UIColor(named: "Color2")
+        cellContentView.layer.cornerRadius = 15
+        cellContentView.addSubview(nameLabel)
+        
         timeLabel.font = UIFont.systemFont(ofSize: 12)
         timeLabel.textColor = UIColor.gray
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(timeLabel)
+        cellContentView.addSubview(timeLabel)
+        
         reminderImageView.image = UIImage(named: "reminder_icon")
         reminderImageView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(reminderImageView)
+        cellContentView.addSubview(reminderImageView)
+        
         checkBoxButton.translatesAutoresizingMaskIntoConstraints = false
         checkBoxButton.addTarget(self, action: #selector(checkBoxButtonTapped), for: .touchUpInside)
-        contentView.addSubview(checkBoxButton)
+        cellContentView.addSubview(checkBoxButton)
+        
+        
+        contentView.addSubview(cellContentView)
+        contentView.backgroundColor = UIColor(named: "Color1")
         
         
         NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -80),
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            timeLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            nameLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 20),
+            nameLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor, constant: -80),
+            nameLabel.topAnchor.constraint(equalTo: cellContentView.topAnchor, constant: 20),
+            timeLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 20),
             timeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5),
-            timeLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
-            reminderImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -60),
-            reminderImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            timeLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -8),
+            reminderImageView.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor, constant: -60),
+            reminderImageView.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
             reminderImageView.widthAnchor.constraint(equalToConstant: 20),
             reminderImageView.heightAnchor.constraint(equalToConstant: 20),
-            checkBoxButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            checkBoxButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            checkBoxButton.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor, constant: -20),
+            checkBoxButton.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
             checkBoxButton.widthAnchor.constraint(equalToConstant: 30),
-            checkBoxButton.heightAnchor.constraint(equalToConstant: 30)
+            checkBoxButton.heightAnchor.constraint(equalToConstant: 30),
+            
+            
+            cellContentView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            cellContentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)
         ])
+        
     }
     
     required init?(coder: NSCoder) {

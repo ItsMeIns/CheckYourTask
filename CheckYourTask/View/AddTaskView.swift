@@ -101,7 +101,6 @@ class AddTaskView {
         cancelButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         cancelButton.setTitleColor(UIColor.black, for: .normal)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-//        cancelButton.addTarget(AddTaskViewController(), action: #selector(cancelButtonTapped), for: .touchUpInside)
         return cancelButton
     }()
     
@@ -119,4 +118,68 @@ class AddTaskView {
         createButton.translatesAutoresizingMaskIntoConstraints = false
         return createButton
     }()
+    
+    //MARK: - constraint -
+    func setupConstraints() {
+        //name textfield
+        addTaskViewController.view.addSubview(taskNameTextField)
+        taskNameTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        taskNameTextField.topAnchor.constraint(equalTo: addTaskViewController.view.topAnchor, constant: 80
+        ).isActive = true
+        taskNameTextField.leftAnchor.constraint(equalTo: addTaskViewController.view.leftAnchor, constant: 20).isActive = true
+        taskNameTextField.rightAnchor.constraint(equalTo: addTaskViewController.view.rightAnchor, constant: -20).isActive = true
+        
+        //date label
+        addTaskViewController.view.addSubview(dateLabel)
+        dateLabel.topAnchor.constraint(equalTo: taskNameTextField.bottomAnchor, constant: 25).isActive = true
+        dateLabel.leadingAnchor.constraint(equalTo: addTaskViewController.view.leadingAnchor, constant: 20).isActive = true
+        
+        //date picker
+        addTaskViewController.view.addSubview(datePicker)
+        datePicker.topAnchor.constraint(equalTo: taskNameTextField.bottomAnchor, constant: 20).isActive = true
+        datePicker.leadingAnchor.constraint(equalTo: addTaskViewController.view.leadingAnchor, constant: 20).isActive = true
+        datePicker.trailingAnchor.constraint(equalTo: addTaskViewController.view.trailingAnchor, constant: -20).isActive = true
+        
+        //time label
+        addTaskViewController.view.addSubview(timeLabel)
+        timeLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 25).isActive = true
+        timeLabel.leadingAnchor.constraint(equalTo: addTaskViewController.view.leadingAnchor, constant: 20).isActive = true
+        
+        //time picker
+        addTaskViewController.view.addSubview(timePicker)
+        timePicker.topAnchor.constraint(equalTo: datePicker.bottomAnchor, constant: 8).isActive = true
+        timePicker.leadingAnchor.constraint(equalTo: addTaskViewController.view.leadingAnchor, constant: 20).isActive = true
+        timePicker.trailingAnchor.constraint(equalTo: addTaskViewController.view.trailingAnchor, constant: -20).isActive = true
+        
+        //description text view
+        addTaskViewController.view.addSubview(descriptionTextView)
+        descriptionTextView.topAnchor.constraint(equalTo: timePicker.bottomAnchor, constant: 20).isActive = true
+        descriptionTextView.leadingAnchor.constraint(equalTo: addTaskViewController.view.leadingAnchor, constant: 20).isActive = true
+        descriptionTextView.trailingAnchor.constraint(equalTo: addTaskViewController.view.trailingAnchor, constant: -20).isActive = true
+        descriptionTextView.bottomAnchor.constraint(equalTo: addTaskViewController.view.bottomAnchor, constant: -400).isActive = true
+        
+        //alert label
+        addTaskViewController.view.addSubview(alertLabel)
+        alertLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 25).isActive = true
+        alertLabel.leadingAnchor.constraint(equalTo: addTaskViewController.view.leadingAnchor, constant: 20).isActive = true
+        
+        //alert picker
+        addTaskViewController.view.addSubview(alertSwitch)
+        alertSwitch.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
+        alertSwitch.trailingAnchor.constraint(equalTo: addTaskViewController.view.trailingAnchor, constant: -20).isActive = true
+        
+        //cancel button
+        addTaskViewController.view.addSubview(cancelButton)
+        cancelButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        cancelButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        cancelButton.bottomAnchor.constraint(equalTo: addTaskViewController.view.bottomAnchor, constant: -50).isActive = true
+        cancelButton.leftAnchor.constraint(equalTo: addTaskViewController.view.leftAnchor, constant: 50).isActive = true
+        
+        //create button
+        addTaskViewController.view.addSubview(createButton)
+        createButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        createButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        createButton.bottomAnchor.constraint(equalTo: addTaskViewController.view.bottomAnchor, constant: -50).isActive = true
+        createButton.rightAnchor.constraint(equalTo: addTaskViewController.view.rightAnchor, constant: -50).isActive = true
+    }
 }
