@@ -142,7 +142,14 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     @objc func showSettings() {
         print("image button pressed")
-    }
+        let SettingVC = SettingViewController()
+        
+        
+        let navigationController = UINavigationController(rootViewController: SettingVC)
+        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.modalTransitionStyle = .crossDissolve
+        present(navigationController, animated: true, completion: nil)
+}
     
     // - add button + setting -
     func callAddTask() {
@@ -263,6 +270,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
     }
     
     //MARK: - TableView Delegate, DataSource -
@@ -355,17 +363,6 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
             return Calendar.current.isDate(taskDate, inSameDayAs: date)
         }
         return matchingDates.count
-    }
-    
-    func minimumDate(for calendar: FSCalendar) -> Date {
-        return Date()
-    }
-    
-    func maximumDate(for calendar: FSCalendar) -> Date {
-        let calendar = Calendar.current
-            let currentDate = calendar.date(byAdding: .year, value: 50, to: Date())
-            let maximumDate = calendar.date(bySettingHour: 23, minute: 59, second: 59, of: currentDate!)!
-            return maximumDate
     }
     
     func calendar(_ calendar: FSCalendar, boundingRectWillChange bounds: CGRect, animated: Bool) {
