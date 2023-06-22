@@ -15,6 +15,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - properties -
     let taskView = TaskView()
+    var tasksViewController: TasksViewController!
     
     var selectedDate = Date()
     var tableView: UITableView!
@@ -38,9 +39,22 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var tasks: [DataTask] = []
     var taskDates: [DataTask] = []
     
+    let themeData = [
+        ThemeData(title: "themeWhite", image: #imageLiteral(resourceName: "themeWhite"), color45: #colorLiteral(red: 0.9662925601, green: 0.9359712005, blue: 0.9023753405, alpha: 1), color25: #colorLiteral(red: 0.8632949591, green: 0.7654848695, blue: 0.7064731717, alpha: 1), color20: #colorLiteral(red: 0.2705166936, green: 0.4434500039, blue: 0.6271486878, alpha: 1), color10: #colorLiteral(red: 0.1030795798, green: 0.2106405497, blue: 0.3431667686, alpha: 1)),
+        ThemeData(title: "themeBlack", image: #imageLiteral(resourceName: "themeBlack"),  color45: #colorLiteral(red: 0.1345694363, green: 0.2182236314, blue: 0.3096637726, alpha: 1), color25: #colorLiteral(red: 0.2919410765, green: 0.4307475984, blue: 0.5186447501, alpha: 1), color20: #colorLiteral(red: 0.5955082178, green: 0.701184094, blue: 0.7551148534, alpha: 1), color10: #colorLiteral(red: 0.8588636518, green: 0.903434813, blue: 0.9322379231, alpha: 1))
+    ]
+    
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        if let savedThemeIndex = UserDefaults.standard.value(forKey: "SelectedThemeIndex") as? Int {
+                ThemeManager.shared.defaultTheme = themeData[savedThemeIndex]
+            } else {
+                ThemeManager.shared.defaultTheme = themeData[0]
+            }
+        
         
         taskView.taskViewController = self
         

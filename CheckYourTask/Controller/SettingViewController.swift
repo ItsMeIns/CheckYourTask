@@ -12,15 +12,12 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     //MARK: - properties -
     let settingsView = SettingsView()
-    
+    let tasksVC = TasksViewController()
     
     
     
     //MARK: - content -
-    let themeData = [
-        ThemeData(title: "themeWhite", image: #imageLiteral(resourceName: "themeWhite"), color45: #colorLiteral(red: 0.9662925601, green: 0.9359712005, blue: 0.9023753405, alpha: 1), color25: #colorLiteral(red: 0.8632949591, green: 0.7654848695, blue: 0.7064731717, alpha: 1), color20: #colorLiteral(red: 0.2705166936, green: 0.4434500039, blue: 0.6271486878, alpha: 1), color10: #colorLiteral(red: 0.1030795798, green: 0.2106405497, blue: 0.3431667686, alpha: 1)),
-        ThemeData(title: "themeBlack", image: #imageLiteral(resourceName: "themeBlack"),  color45: #colorLiteral(red: 0.1345694363, green: 0.2182236314, blue: 0.3096637726, alpha: 1), color25: #colorLiteral(red: 0.2919410765, green: 0.4307475984, blue: 0.5186447501, alpha: 1), color20: #colorLiteral(red: 0.5955082178, green: 0.701184094, blue: 0.7551148534, alpha: 1), color10: #colorLiteral(red: 0.8588636518, green: 0.903434813, blue: 0.9322379231, alpha: 1))
-    ]
+    
     
     
     
@@ -52,7 +49,9 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     
     @objc private func themeChanged() {
-            // Оновіть інтерфейс згідно з новою темою
+        if let themeIndex = tasksVC.themeData.firstIndex(of: ThemeManager.shared.selectedTheme!) {
+                ThemeManager.shared.saveSelectedThemeIndex(themeIndex)
+            }
             updateInterfaceWithTheme()
             
         }
@@ -102,20 +101,20 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return themeData.count
+        return tasksVC.themeData.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "settingCell", for: indexPath) as! ThemeCollectionViewCell
-        cell.themeData = self.themeData[indexPath.row]
+        cell.themeData = self.tasksVC.themeData[indexPath.row]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedTheme = themeData[indexPath.item]
+        let selectedTheme = tasksVC.themeData[indexPath.item]
         ThemeManager.shared.selectedTheme = selectedTheme
         updateInterfaceWithTheme()
-        print("натиснута \(themeData[indexPath.item])")
+        print("натиснута \(tasksVC.themeData[indexPath.item])")
     }
     
 }

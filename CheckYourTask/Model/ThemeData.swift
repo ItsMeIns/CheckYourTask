@@ -7,9 +7,10 @@
 
 import UIKit
 
-struct ThemeData {
+struct ThemeData: Equatable {
     var title: String
     var image: UIImage
+   
     
     var color45: UIColor?
     var color25: UIColor?
