@@ -26,6 +26,9 @@ class SettingsView {
         return saveButton
     }()
     
+    
+    
+    // - collectionView -
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -47,12 +50,10 @@ class SettingsView {
         saveButton.bottomAnchor.constraint(equalTo: settingViewController.view.bottomAnchor, constant: -50).isActive = true
       
         
+       
         
         // collection view
         settingViewController.view.addSubview(collectionView)
-        collectionView.backgroundColor = UIColor(named: "Color1")
-
-        
         collectionView.heightAnchor.constraint(equalTo: collectionView.widthAnchor, multiplier: 0.5).isActive = true
         collectionView.topAnchor.constraint(equalTo: settingViewController.view.topAnchor, constant: 150 ).isActive = true
         collectionView.leadingAnchor.constraint(equalTo: settingViewController.view.leadingAnchor, constant: 40 ).isActive = true

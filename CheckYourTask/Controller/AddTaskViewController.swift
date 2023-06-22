@@ -14,6 +14,7 @@ import UserNotifications
 class AddTaskViewController: UIViewController, UITextFieldDelegate {
     //MARK: - properties -
     let addTaskView = AddTaskView()
+    var tasksVC: TasksViewController!
     var selectedDate: Date?
     var task: DataTask?
     let notificationCenter = UNUserNotificationCenter.current()
@@ -30,13 +31,45 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         addTaskView.addTaskViewController = self
         addTaskView.taskNameTextField.delegate = self
         
+        
+        
         addTaskView.setupConstraints()
         updateUI()
         callSettings()
         
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
+        updateInterfaceWithTheme()
+        
     }
     
     //MARK: - intents -
+    
+    @objc private func themeChanged() {
+            updateInterfaceWithTheme()
+        }
+    
+    
+    private func updateInterfaceWithTheme() {
+        guard let theme = ThemeManager.shared.selectedTheme else {
+            return
+        }
+        view.backgroundColor = theme.color45
+        addTaskView.dateLabel.textColor = theme.color10
+        addTaskView.datePicker.tintColor = theme.color10
+        addTaskView.timeLabel.textColor = theme.color10
+        addTaskView.timePicker.tintColor = theme.color10
+        addTaskView.alertLabel.textColor = theme.color10
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     private func callSettings() {
         //натискання кнопки назад
         addTaskView.cancelButton.addTarget(AddTaskViewController(), action: #selector(cancelButtonTapped), for: .touchUpInside)
@@ -46,10 +79,12 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             title = "Edit Task"
             addTaskView.createButton.setTitle("Edit", for: .normal)
             addTaskView.createButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
+
         } else {
             title = "Create Task"
             addTaskView.createButton.setTitle("Create", for: .normal)
             addTaskView.createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
+            
         }
         
         //нагадування
@@ -86,6 +121,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         navigationController?.view.layer.add(transition, forKey: nil)
         navigationController?.pushViewController(backToTaskVC, animated: false)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        
     }
     
     //натискання кнопки редагувати
@@ -116,6 +152,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             }
         }
         scheduleNotification()
+        
     }
     
     //натискання кнопки створити
@@ -151,6 +188,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             print("Error saving task: \(error)")
         }
         scheduleNotification()
+        
     }
     
     func formattedDate(date: Date) -> String {

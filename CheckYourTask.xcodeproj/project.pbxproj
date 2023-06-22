@@ -24,6 +24,7 @@
 		FAADCDD12A169F6200FD51C1 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD02A169F6200FD51C1 /* TaskView.swift */; };
 		FAADCDD72A23AE6F00FD51C1 /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */; };
 		FADB345F2A34A010003AD8ED /* DetailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB345E2A34A010003AD8ED /* DetailedViewController.swift */; };
+		FAE608922A44632E005AA48E /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE608912A44632E005AA48E /* ThemeManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		FAADCDD02A169F6200FD51C1 /* TaskView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
 		FADB345E2A34A010003AD8ED /* DetailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedViewController.swift; sourceTree = "<group>"; };
+		FAE608912A44632E005AA48E /* ThemeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 			children = (
 				FA611A832A011B0A0080A3E4 /* CheckYourTask.xcdatamodeld */,
 				FA132D822A3FAA50007F380A /* ThemeData.swift */,
+				FAE608912A44632E005AA48E /* ThemeManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -269,6 +272,7 @@
 			files = (
 				FA132D812A3FAA42007F380A /* ThemeCollectionViewCell.swift in Sources */,
 				FAADCDD72A23AE6F00FD51C1 /* TaskTableViewCell.swift in Sources */,
+				FAE608922A44632E005AA48E /* ThemeManager.swift in Sources */,
 				FA9CB56A2A23E2F5000B8B21 /* AddTaskViewController.swift in Sources */,
 				FAA7AC662A3A8050000367D5 /* DetailedView.swift in Sources */,
 				FADB345F2A34A010003AD8ED /* DetailedViewController.swift in Sources */,

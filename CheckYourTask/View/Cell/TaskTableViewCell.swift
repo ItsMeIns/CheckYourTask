@@ -11,6 +11,10 @@ class TaskTableViewCell: UITableViewCell {
     
     weak var tasksViewController: TasksViewController?
     
+    var contentViewColor: UIColor?
+    var cellContentViewColor: UIColor?
+    
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         return label
@@ -50,12 +54,13 @@ class TaskTableViewCell: UITableViewCell {
         nameLabel.numberOfLines = 0
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        cellContentView.backgroundColor = UIColor(named: "Color2")
+        
+      
         cellContentView.layer.cornerRadius = 15
         cellContentView.addSubview(nameLabel)
         
         timeLabel.font = UIFont.systemFont(ofSize: 12)
-        timeLabel.textColor = UIColor.gray
+        timeLabel.textColor = UIColor.black
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         cellContentView.addSubview(timeLabel)
         
@@ -69,7 +74,8 @@ class TaskTableViewCell: UITableViewCell {
         
         
         contentView.addSubview(cellContentView)
-        contentView.backgroundColor = UIColor(named: "Color1")
+        
+        
         
         
         NSLayoutConstraint.activate([
@@ -156,5 +162,13 @@ class TaskTableViewCell: UITableViewCell {
         checkBoxButton.setImage(task.isComplete ? checkedImage : uncheckedImage, for: .normal)
         checkBoxButton.setImage(checkedImage, for: .selected)
         checkBoxButton.isSelected = task.isComplete
+        
+        updateInterfaceWithTheme()
     }
+    
+    func updateInterfaceWithTheme() {
+        contentView.backgroundColor = contentViewColor
+        cellContentView.backgroundColor = cellContentViewColor
+    }
+    
 }

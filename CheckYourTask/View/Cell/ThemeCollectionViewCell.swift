@@ -9,6 +9,9 @@ import UIKit
 
 class ThemeCollectionViewCell: UICollectionViewCell {
     
+
+    
+    
     var themeData: ThemeData? {
             didSet {
                 guard let themeData = themeData else { return }

@@ -23,9 +23,29 @@ class DetailedViewController: UIViewController {
         detailedView.setupConstraints()
         updateUI()
         callSettings()
+        
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
+        updateInterfaceWithTheme()
     }
     
     //MARK: - intents -
+    
+    @objc private func themeChanged() {
+            updateInterfaceWithTheme()
+        }
+    
+    
+    private func updateInterfaceWithTheme() {
+        guard let theme = ThemeManager.shared.selectedTheme else {
+            return
+        }
+        view.backgroundColor = theme.color45
+        
+    }
+    
+    
+    
     
     @objc func cancelButtonTapped() {
         let backToTaskVC = TasksViewController()

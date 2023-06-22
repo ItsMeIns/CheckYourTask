@@ -15,6 +15,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - properties -
     let taskView = TaskView()
+    
     var selectedDate = Date()
     var tableView: UITableView!
     var completedTasks: Int = 0
@@ -40,9 +41,11 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "Color1")
+        
         taskView.taskViewController = self
+        
         notificationCenter.delegate = self
+        calendar.delegate = self
         callSettings()
         callAddTask()
         taskView.setupConstraints()
@@ -56,12 +59,19 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
         
+        
+        
+        
+        
+        
         //кудись сховати
         if let calendarBackgroundViewHeight = UserDefaults.standard.value(forKey: "calendarBackgroundViewHeight") as? CGFloat {
                 calendarBackgroundViewHeightConstraint.constant = calendarBackgroundViewHeight
             }
         
-        
+       
+        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
+        updateInterfaceWithTheme()
     }
     
     
@@ -73,6 +83,45 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     //MARK: - intents -
+    
+    @objc private func themeChanged() {
+            updateInterfaceWithTheme()
+        }
+    
+    
+    private func updateInterfaceWithTheme() {
+            guard let theme = ThemeManager.shared.selectedTheme else {
+                return
+            }
+        view.backgroundColor = theme.color45
+        
+        taskView.addTaskButton.layer.borderColor = theme.color20?.cgColor
+        
+        let updatedImage = taskView.addTaskButton.currentImage?.withTintColor(theme.color20!, renderingMode: .alwaysOriginal)
+        taskView.addTaskButton.setImage(updatedImage, for: .normal)
+        
+        taskView.avatarSettings.layer.borderColor = theme.color20?.cgColor
+        
+        taskView.percentagesMadeLayer.textColor = theme.color10
+        
+        taskView.addProgressView.progressTintColor = theme.color10
+        
+        taskView.contentView.backgroundColor = theme.color25
+        
+        calendar.appearance.headerTitleColor = theme.color10
+        calendar.appearance.weekdayTextColor = theme.color10
+        calendar.appearance.titleDefaultColor = theme.color20
+        
+        
+        calendar.appearance.eventDefaultColor = theme.color10
+        calendar.appearance.eventSelectionColor = theme.color10
+        
+        calendar.appearance.todayColor = .darkGray
+        calendar.appearance.selectionColor = .black
+        
+      }
+    
+    
     
     //save the current date
     func saveSelectedDateUD() {
@@ -175,9 +224,9 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.appearance.headerDateFormat = "LLLL yyyy"
         calendar.appearance.titleFont = UIFont.systemFont(ofSize: 18)
         calendar.appearance.headerTitleFont = UIFont.boldSystemFont(ofSize: 20)
-        calendar.appearance.headerTitleColor = .black
+        
         calendar.appearance.weekdayFont = UIFont.boldSystemFont(ofSize: 15)
-        calendar.appearance.weekdayTextColor = .black
+        calendar.appearance.eventOffset = CGPoint(x: 0, y: 2)
         calendar.appearance.todayColor = .darkGray
         calendar.appearance.selectionColor = .black
         calendar.placeholderType = .none
@@ -263,7 +312,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.backgroundColor = UIColor(named: "Color1")
+        tableView.backgroundColor = UIColor(named: "Color1") //колір
         tableView.register(TaskTableViewCell.self, forCellReuseIdentifier: "Cell")
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -283,25 +332,29 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TaskTableViewCell
         cell.tasksViewController = self
         
-       
-        
-        let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
+       let tasksForSelectedDate = tasks.filter { $0.date.map { Calendar.current.isDate($0, inSameDayAs: selectedDate) } ?? false }
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
             cell.configure(with: task)
         }
+        
+        
+        cell.contentViewColor = ThemeManager.shared.selectedTheme?.color45
+        cell.cellContentViewColor = ThemeManager.shared.selectedTheme?.color25
+        cell.updateInterfaceWithTheme()
         return cell
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let deleteAction = UIContextualAction(style: .destructive, title: "Видалити") { [weak self] (_, _, completion) in
+        let deleteAction = UIContextualAction(style: .destructive, title: "") { [weak self] (_, _, completion) in
             guard let self = self else { return }
             
             self.deleteTask(at: indexPath)
             completion(true)
         }
-        deleteAction.image = UIImage(systemName: "trash")
+        deleteAction.backgroundColor = UIColor(named: "Color1") //колір треба обробити
+        deleteAction.image = UIImage(systemName: "trash")?.withTintColor(.black, renderingMode: .alwaysOriginal)
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         configuration.performsFirstActionWithFullSwipe = false
         return configuration
@@ -369,6 +422,8 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         calendarHeightConstraint.constant = bounds.height
         view.layoutIfNeeded()
     }
+    
+
 }
 
 
