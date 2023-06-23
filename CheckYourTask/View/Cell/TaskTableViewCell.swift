@@ -113,7 +113,7 @@ class TaskTableViewCell: UITableViewCell {
            let tasksViewController = tasksViewController,
            let indexPath = tasksViewController.tableView.indexPath(for: self) {
             let task = tasksViewController.tasks[indexPath.row]
-            
+
             if checkBoxButton.isSelected {
                 if let notificationId = task.notificationId {
                     tasksViewController.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationId])
@@ -121,9 +121,9 @@ class TaskTableViewCell: UITableViewCell {
                 }
                 task.reminder = false
             }
-            
+
             task.isComplete = checkBoxButton.isSelected
-            
+
             do {
                 let context = appDelegate.persistentContainer.viewContext
                 try context.save()
@@ -135,6 +135,8 @@ class TaskTableViewCell: UITableViewCell {
             }
         }
     }
+    
+    
     
     func configure(with task: DataTask) {
         nameLabel.text = task.taskName
