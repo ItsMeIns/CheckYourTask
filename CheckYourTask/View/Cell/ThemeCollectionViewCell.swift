@@ -25,6 +25,8 @@ class ThemeCollectionViewCell: UICollectionViewCell {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFill
+        image.layer.borderWidth = 2
+        image.layer.borderColor = UIColor.black.cgColor
         image.clipsToBounds = true
         image.layer.cornerRadius = 12
         return image

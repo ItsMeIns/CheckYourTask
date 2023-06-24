@@ -69,11 +69,6 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
         }
     
     
-    
-    
-    
-    
-    
     //save button
     func saveSettings() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(saveButtonTapped))

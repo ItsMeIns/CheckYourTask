@@ -55,18 +55,13 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             return
         }
         view.backgroundColor = theme.color45
-        addTaskView.dateLabel.textColor = theme.color10
-        addTaskView.datePicker.tintColor = theme.color10
-        addTaskView.timeLabel.textColor = theme.color10
-        addTaskView.timePicker.tintColor = theme.color10
-        addTaskView.alertLabel.textColor = theme.color10
+        addTaskView.dateLabel.textColor = .black
+        addTaskView.timeLabel.textColor = .black
+        addTaskView.alertLabel.textColor = .black
+        addTaskView.conteinerView.backgroundColor = theme.color25
+        
         
     }
-    
-    
-    
-    
-    
     
     
     
@@ -141,17 +136,24 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             
             do {
                 try context.save()
-                if let tasksViewController = presentingViewController as? TasksViewController {
+                if let tasksViewController = tasksVC {
                     tasksViewController.tableView.reloadData()
                     tasksViewController.calendar.reloadData()
                     tasksViewController.updateProgress()
                 }
-                dismiss(animated: true, completion: nil)
             } catch {
                 print("Error saving task: \(error)")
             }
         }
         scheduleNotification()
+        let backToTaskVC = TasksViewController()
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.fade
+        navigationController?.view.layer.add(transition, forKey: nil)
+        navigationController?.pushViewController(backToTaskVC, animated: false)
+        navigationController?.setNavigationBarHidden(true, animated: false)
         
     }
     
@@ -176,18 +178,27 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         
         do {
             try context.save()
-            if let tasksViewController = presentingViewController as? TasksViewController {
+            if let tasksViewController = tasksVC {
                 tasksViewController.tasks.append(task)
                 tasksViewController.taskDates.append(task)
                 tasksViewController.tableView.reloadData()
                 tasksViewController.calendar.reloadData()
                 tasksViewController.updateProgress()
+                
             }
-            dismiss(animated: true, completion: nil)
         } catch {
             print("Error saving task: \(error)")
         }
         scheduleNotification()
+        let backToTaskVC = TasksViewController()
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.fade
+        navigationController?.view.layer.add(transition, forKey: nil)
+        navigationController?.pushViewController(backToTaskVC, animated: false)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+       
         
     }
     
@@ -202,6 +213,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         let selectedDate = addTaskView.datePicker.date
         let selectedTime = addTaskView.timePicker.date
         let notificationId = UUID().uuidString
+        print("id!! \(notificationId)")
         task?.notificationId = notificationId
         
         notificationCenter.getNotificationSettings { (settings) in
@@ -227,23 +239,6 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                             return
                         }
                     }
-                    
-                    let ac = UIAlertController(title: "Notification Scheduled", message: "At " + self.formattedDate(date: selectedDate), preferredStyle: .alert)
-                    ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in}))
-                    self.present(ac, animated: true)
-                } else {
-                    let ac = UIAlertController(title: "Enable Notification?", message: "To use this feature you must enable notifications in settings", preferredStyle: .alert)
-                    let goToSettings = UIAlertAction(title: "Settings", style: .default) { (_) in
-                        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
-                            return
-                        }
-                        if (UIApplication.shared.canOpenURL(settingsURL)) {
-                            UIApplication.shared.open(settingsURL) { (_) in}
-                        }
-                    }
-                    ac.addAction(goToSettings)
-                    ac.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in}))
-                    self.present(ac, animated: true)
                 }
             }
         }

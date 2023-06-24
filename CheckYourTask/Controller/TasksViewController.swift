@@ -317,7 +317,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.addConstraint(calendarHeightConstraint)
         calendarBackgroundViewHeightConstraint = taskView.contentView.heightAnchor.constraint(equalToConstant: 300)
         calendarBackgroundViewHeightConstraint.isActive = true
-        calendar.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        calendar.heightAnchor.constraint(equalToConstant: 290).isActive = true
         calendar.topAnchor.constraint(equalTo: taskView.contentView.topAnchor, constant: 5).isActive = true
         calendar.leftAnchor.constraint(equalTo: taskView.contentView.leftAnchor, constant: 5).isActive = true
         calendar.rightAnchor.constraint(equalTo: taskView.contentView.rightAnchor, constant: -5).isActive = true
