@@ -126,9 +126,13 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         }
         
         let context = appDelegate.persistentContainer.viewContext
-        if let editedTask = task {
-            editedTask.taskName = addTaskView.taskNameTextField.text
-            editedTask.taskDescription = addTaskView.descriptionTextView.text
+        
+        if let editedTask = task,
+           let taskName = addTaskView.taskNameTextField.text,
+           let taskDescription = addTaskView.descriptionTextView.text {
+            
+            editedTask.taskName = taskName
+            editedTask.taskDescription = taskDescription
             editedTask.date = addTaskView.datePicker.date
             editedTask.time = addTaskView.timePicker.date
             editedTask.reminder = addTaskView.alertSwitch.isOn
@@ -136,41 +140,40 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             
             do {
                 try context.save()
+                
                 if let tasksViewController = tasksVC {
                     tasksViewController.tableView.reloadData()
                     tasksViewController.calendar.reloadData()
                     tasksViewController.updateProgress()
                 }
+                
             } catch {
                 print("Error saving task: \(error)")
             }
+            
+            scheduleNotification(for: editedTask)
+            navigateToTasksViewController()
         }
-        scheduleNotification()
-        let backToTaskVC = TasksViewController()
-        let transition = CATransition()
-        transition.duration = 0.3
-        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-        transition.type = CATransitionType.fade
-        navigationController?.view.layer.add(transition, forKey: nil)
-        navigationController?.pushViewController(backToTaskVC, animated: false)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        
     }
+
     
     //натискання кнопки створити
+  
     @objc func createButtonPressed() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
-        
         let context = appDelegate.persistentContainer.viewContext
-        guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context) else {
+        
+        guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context),
+              let taskName = addTaskView.taskNameTextField.text,
+              let taskDescription = addTaskView.descriptionTextView.text else {
             return
         }
         
         let task = DataTask(entity: entityDescription, insertInto: context)
-        task.taskName = addTaskView.taskNameTextField.text
-        task.taskDescription = addTaskView.descriptionTextView.text
+        task.taskName = taskName
+        task.taskDescription = taskDescription
         task.date = addTaskView.datePicker.date
         task.time = addTaskView.timePicker.date
         task.reminder = addTaskView.alertSwitch.isOn
@@ -178,53 +181,42 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         
         do {
             try context.save()
+            
             if let tasksViewController = tasksVC {
                 tasksViewController.tasks.append(task)
                 tasksViewController.taskDates.append(task)
                 tasksViewController.tableView.reloadData()
                 tasksViewController.calendar.reloadData()
                 tasksViewController.updateProgress()
-                
             }
+            
         } catch {
             print("Error saving task: \(error)")
         }
-        scheduleNotification()
-        let backToTaskVC = TasksViewController()
-        let transition = CATransition()
-        transition.duration = 0.3
-        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-        transition.type = CATransitionType.fade
-        navigationController?.view.layer.add(transition, forKey: nil)
-        navigationController?.pushViewController(backToTaskVC, animated: false)
-        navigationController?.setNavigationBarHidden(true, animated: false)
-       
         
+        scheduleNotification(for: task)
+        navigateToTasksViewController()
     }
     
-    func formattedDate(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: addTaskView.timePicker.date)
-    }
     
-    func scheduleNotification() {
+    func scheduleNotification(for task: DataTask) {
         let calendar = Calendar.current
         let selectedDate = addTaskView.datePicker.date
         let selectedTime = addTaskView.timePicker.date
         let notificationId = UUID().uuidString
-        print("id!! \(notificationId)")
-        task?.notificationId = notificationId
-        
-        notificationCenter.getNotificationSettings { (settings) in
+        print("id!! (notificationId)")
+        task.notificationId = notificationId
+        notificationCenter.getNotificationSettings { [weak self] (settings) in
             DispatchQueue.main.async {
                 let title = "CheckYourTask"
-                let message = self.addTaskView.taskNameTextField.text!
-                if (settings.authorizationStatus == .authorized) {
+                let message = self?.addTaskView.taskNameTextField.text ?? ""
+                
+                if settings.authorizationStatus == .authorized {
                     let content = UNMutableNotificationContent()
                     content.title = title
                     content.body = message
-                    var dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: selectedDate)
+                    
+                    var dateComp = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: selectedDate)
                     dateComp.year = calendar.component(.year, from: selectedDate)
                     dateComp.month = calendar.component(.month, from: selectedDate)
                     dateComp.day = calendar.component(.day, from: selectedDate)
@@ -233,16 +225,38 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                     
                     let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
                     let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
-                    self.notificationCenter.add(request) { (error) in
-                        if (error != nil) {
-                            print("Error " + error.debugDescription)
-                            return
+                    
+                    self?.notificationCenter.add(request) { (error) in
+                        if let error = error {
+                            print("Error: \(error)")
                         }
                     }
                 }
             }
         }
     }
+    
+    func navigateToTasksViewController() {
+        let backToTaskVC = TasksViewController()
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.fade
+        navigationController?.view.layer.add(transition, forKey: nil)
+        navigationController?.pushViewController(backToTaskVC, animated: false)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    
+    
+    
+    func formattedDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: addTaskView.timePicker.date)
+    }
+    
+    
     
     func updateUI() {
         guard let task = task else { return }
