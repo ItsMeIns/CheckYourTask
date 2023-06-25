@@ -12,14 +12,13 @@ class ThemeManager {
     
     static let shared = ThemeManager()
     private init() {}
-
+    
     var selectedTheme: ThemeData? {
         didSet {
-
             NotificationCenter.default.post(name: NSNotification.Name("ThemeChangedNotification"), object: nil)
         }
     }
-
+    
     var defaultTheme: ThemeData? {
         didSet {
             if selectedTheme == nil {
@@ -29,7 +28,7 @@ class ThemeManager {
     }
     
     func saveSelectedThemeIndex(_ index: Int) {
-            UserDefaults.standard.set(index, forKey: "SelectedThemeIndex")
-        }
-    
+        UserDefaults.standard.set(index, forKey: "SelectedThemeIndex")
     }
+    
+}

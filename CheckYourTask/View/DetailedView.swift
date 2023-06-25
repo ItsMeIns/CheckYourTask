@@ -88,7 +88,6 @@ class DetailedView {
         return editButton
     }()
     
-    
     //MARK: - constraint -
     func setupConstraints() {
         //task name view
@@ -137,5 +136,4 @@ class DetailedView {
         editButton.bottomAnchor.constraint(equalTo: detailedViewController.view.bottomAnchor, constant: -50).isActive = true
         editButton.rightAnchor.constraint(equalTo: detailedViewController.view.rightAnchor, constant: -50).isActive = true
     }
-    
 }

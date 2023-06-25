@@ -10,7 +10,6 @@ import UIKit
 class SettingsView {
     var settingViewController: SettingViewController!
    
-    
     // - save -
     let saveButton: UIButton = {
         let saveButton = UIButton(type: .system)
@@ -26,8 +25,6 @@ class SettingsView {
         return saveButton
     }()
     
-    
-    
     // - collectionView -
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -38,28 +35,21 @@ class SettingsView {
         return cv
     }()
     
-    
-    
     //MARK: - constraint -
     func setupConstraints() {
         // - save -
         settingViewController.view.addSubview(saveButton)
         saveButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        saveButton.widthAnchor.constraint(equalToConstant: 130).isActive = true
-        saveButton.leftAnchor.constraint(equalTo: settingViewController.view.leftAnchor, constant: 50).isActive = true
+        saveButton.widthAnchor.constraint(equalToConstant: 170).isActive = true
+        saveButton.centerXAnchor.constraint(equalTo: settingViewController.view.centerXAnchor).isActive = true
         saveButton.bottomAnchor.constraint(equalTo: settingViewController.view.bottomAnchor, constant: -50).isActive = true
       
-        
-       
-        
         // collection view
         settingViewController.view.addSubview(collectionView)
         collectionView.heightAnchor.constraint(equalTo: collectionView.widthAnchor, multiplier: 0.5).isActive = true
         collectionView.topAnchor.constraint(equalTo: settingViewController.view.topAnchor, constant: 150 ).isActive = true
         collectionView.leadingAnchor.constraint(equalTo: settingViewController.view.leadingAnchor, constant: 40 ).isActive = true
         collectionView.trailingAnchor.constraint(equalTo: settingViewController.view.trailingAnchor, constant: -40 ).isActive = true
-        
-        
     }
 }
 

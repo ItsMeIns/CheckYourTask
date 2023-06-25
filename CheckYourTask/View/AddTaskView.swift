@@ -11,7 +11,6 @@ import UIKit
 class AddTaskView {
     var addTaskViewController: AddTaskViewController!
     
-    
     let conteinerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 15
@@ -22,7 +21,6 @@ class AddTaskView {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
     
     // - name text field -
     let taskNameTextField: UITextField = {
@@ -140,9 +138,6 @@ class AddTaskView {
         conteinerView.trailingAnchor.constraint(equalTo: addTaskViewController.view.trailingAnchor, constant: -16).isActive = true
         conteinerView.topAnchor.constraint(equalTo: addTaskViewController.view.topAnchor, constant: 100).isActive = true
         conteinerView.bottomAnchor.constraint(equalTo: addTaskViewController.view.bottomAnchor, constant: -160).isActive = true
-        
-        
-        
         
         //name textfield
         conteinerView.addSubview(taskNameTextField)

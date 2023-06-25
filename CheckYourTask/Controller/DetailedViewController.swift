@@ -13,13 +13,11 @@ class DetailedViewController: UIViewController {
     let detailedView = DetailedView()
     var task: DataTask?
     
-    
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "Color1")
         detailedView.detailedViewController = self
-        
         detailedView.setupConstraints()
         updateUI()
         callSettings()
@@ -35,17 +33,12 @@ class DetailedViewController: UIViewController {
             updateInterfaceWithTheme()
         }
     
-    
     private func updateInterfaceWithTheme() {
         guard let theme = ThemeManager.shared.selectedTheme else {
             return
         }
         view.backgroundColor = theme.color45
-        
     }
-    
-    
-    
     
     @objc func cancelButtonTapped() {
         let backToTaskVC = TasksViewController()

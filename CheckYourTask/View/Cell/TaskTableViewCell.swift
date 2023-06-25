@@ -8,12 +8,11 @@
 import UIKit
 
 class TaskTableViewCell: UITableViewCell {
-    
+   
+    //MARK: - properties -
     weak var tasksViewController: TasksViewController?
-    
     var contentViewColor: UIColor?
     var cellContentViewColor: UIColor?
-    
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -55,7 +54,6 @@ class TaskTableViewCell: UITableViewCell {
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         
-      
         cellContentView.layer.cornerRadius = 15
         cellContentView.addSubview(nameLabel)
         
@@ -72,11 +70,7 @@ class TaskTableViewCell: UITableViewCell {
         checkBoxButton.addTarget(self, action: #selector(checkBoxButtonTapped), for: .touchUpInside)
         cellContentView.addSubview(checkBoxButton)
         
-        
         contentView.addSubview(cellContentView)
-        
-        
-        
         
         NSLayoutConstraint.activate([
             nameLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 20),
@@ -94,13 +88,11 @@ class TaskTableViewCell: UITableViewCell {
             checkBoxButton.widthAnchor.constraint(equalToConstant: 30),
             checkBoxButton.heightAnchor.constraint(equalToConstant: 30),
             
-            
             cellContentView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             cellContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             cellContentView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
             cellContentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)
         ])
-        
     }
     
     required init?(coder: NSCoder) {
@@ -113,17 +105,15 @@ class TaskTableViewCell: UITableViewCell {
            let tasksViewController = tasksViewController,
            let indexPath = tasksViewController.tableView.indexPath(for: self) {
             let task = tasksViewController.tasks[indexPath.row]
-
             if checkBoxButton.isSelected {
                 if let notificationId = task.notificationId {
                     tasksViewController.notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationId])
                     task.notificationId = nil
                 }
                 task.reminder = false
+                appDelegate.saveContext()
             }
-
             task.isComplete = checkBoxButton.isSelected
-
             do {
                 let context = appDelegate.persistentContainer.viewContext
                 try context.save()
@@ -135,8 +125,6 @@ class TaskTableViewCell: UITableViewCell {
             }
         }
     }
-    
-    
     
     func configure(with task: DataTask) {
         nameLabel.text = task.taskName

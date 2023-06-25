@@ -48,13 +48,11 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         if let savedThemeIndex = UserDefaults.standard.value(forKey: "SelectedThemeIndex") as? Int {
             ThemeManager.shared.defaultTheme = themeData[savedThemeIndex]
         } else {
             ThemeManager.shared.defaultTheme = themeData[0]
         }
-        
         
         taskView.taskViewController = self
         
@@ -78,34 +76,25 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             calendarBackgroundViewHeightConstraint.constant = calendarBackgroundViewHeight
         }
         
-        
         NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
         updateInterfaceWithTheme()
     }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if let selectedDate = UserDefaults.standard.object(forKey: "selectedDate") as? Date {
             calendar.select(selectedDate)
         }
-        
         self.tableView.reloadData()
         self.calendar.reloadData()
         self.updateProgress()
-        
     }
-    
-    
-    
-    
     
     //MARK: - intents -
     
     @objc private func themeChanged() {
         updateInterfaceWithTheme()
     }
-    
     
     private func updateInterfaceWithTheme() {
         guard let theme = ThemeManager.shared.selectedTheme else {
@@ -128,10 +117,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.appearance.eventSelectionColor = theme.color10
         calendar.appearance.todayColor = .darkGray
         calendar.appearance.selectionColor = .black
-        
     }
-    
-    
     
     //save the current date
     func saveSelectedDateUD() {
@@ -178,8 +164,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
-    
-    
     //- progress bar -
     func updateProgress() {
         let tasksForSelectedDate = tasks.filter {
@@ -205,7 +189,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         print("image button pressed")
         let SettingVC = SettingViewController()
         
-        
         let navigationController = UINavigationController(rootViewController: SettingVC)
         navigationController.modalPresentationStyle = .fullScreen
         navigationController.modalTransitionStyle = .crossDissolve
@@ -216,6 +199,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func callAddTask() {
         taskView.addTaskButton.addTarget(self, action: #selector(addTask), for: .touchUpInside)
     }
+    
     @objc func addTask() {
         print("add button pressed")
         let addTaskVC = AddTaskViewController()
@@ -238,12 +222,10 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } else {
             calendar.locale = Locale.current
         }
-        
         calendar.firstWeekday = 2
         calendar.appearance.headerDateFormat = "LLLL yyyy"
         calendar.appearance.titleFont = UIFont.systemFont(ofSize: 18)
         calendar.appearance.headerTitleFont = UIFont.boldSystemFont(ofSize: 20)
-        
         calendar.appearance.weekdayFont = UIFont.boldSystemFont(ofSize: 15)
         calendar.appearance.eventOffset = CGPoint(x: 0, y: 2)
         calendar.appearance.todayColor = .darkGray
@@ -251,7 +233,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.placeholderType = .none
         calendar.appearance.headerMinimumDissolvedAlpha = 0
         calendar.scope = calendarScope
-        
         
         if let savedScopeValue = UserDefaults.standard.value(forKey: "calendarScope") as? Int,
            let savedScope = FSCalendarScope(rawValue: UInt(savedScopeValue)) {
@@ -273,7 +254,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         } catch {
             print("Помилка під час витягування задач з Core Data: \(error)")
         }
-        
         updateTasksForSelectedDate()
         tableView.reloadData()
         calendar.reloadData()
@@ -281,7 +261,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeUpGesture.direction = .up
         calendar.addGestureRecognizer(swipeUpGesture)
-        
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeGesture(_:)))
         swipeDownGesture.direction = .down
         calendar.addGestureRecognizer(swipeDownGesture)
@@ -294,7 +273,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 calendarBackgroundViewHeightConstraint.constant = 130
                 UserDefaults.standard.set(calendar.scope.rawValue, forKey: "calendarScope")
                 UserDefaults.standard.set(calendarBackgroundViewHeightConstraint.constant, forKey: "calendarBackgroundViewHeight")
-                
             }
         } else if gesture.direction == .down {
             if calendar.scope != .month {
@@ -304,7 +282,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 UserDefaults.standard.set(calendarBackgroundViewHeightConstraint.constant, forKey: "calendarBackgroundViewHeight")
             }
         }
-        
         UIView.animate(withDuration: 0.3) {
             self.view.layoutIfNeeded()
         }
@@ -356,8 +333,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
             let task = tasksForSelectedDate[indexPath.row]
             cell.configure(with: task)
         }
-        
-        
         cell.contentViewColor = ThemeManager.shared.selectedTheme?.color45
         cell.cellContentViewColor = ThemeManager.shared.selectedTheme?.color25
         cell.updateInterfaceWithTheme()
@@ -365,10 +340,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
         let deleteAction = UIContextualAction(style: .destructive, title: "") { [weak self] (_, _, completion) in
             guard let self = self else { return }
-            
             self.deleteTask(at: indexPath)
             completion(true)
         }
@@ -383,7 +356,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let tasksForSelectedDate = tasks.filter {
             $0.date != nil && Calendar.current.isDate($0.date!, inSameDayAs: selectedDate)
         }
-        
         if indexPath.row < tasksForSelectedDate.count {
             let task = tasksForSelectedDate[indexPath.row]
             let detailVC = DetailedViewController()
@@ -408,7 +380,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
 
 //MARK: - Calendar Delegate, DataSource -
 extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
-    
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         print("did select date \(self.dateFormatter.string(from: date))")
         selectedDate = date
@@ -441,8 +412,6 @@ extension TasksViewController: FSCalendarDelegate, FSCalendarDataSource {
         calendarHeightConstraint.constant = bounds.height
         view.layoutIfNeeded()
     }
-    
-    
 }
 
 

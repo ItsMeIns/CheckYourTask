@@ -20,19 +20,14 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
     let notificationCenter = UNUserNotificationCenter.current()
     var isEditMode = false
     
-    
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = UIColor(named: "Color1")
         navigationItem.hidesBackButton = true
-        
         addTaskView.addTaskViewController = self
         addTaskView.taskNameTextField.delegate = self
-        
-        
-        
         addTaskView.setupConstraints()
         updateUI()
         callSettings()
@@ -40,15 +35,12 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
         updateInterfaceWithTheme()
-        
     }
     
     //MARK: - intents -
-    
     @objc private func themeChanged() {
             updateInterfaceWithTheme()
         }
-    
     
     private func updateInterfaceWithTheme() {
         guard let theme = ThemeManager.shared.selectedTheme else {
@@ -59,11 +51,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         addTaskView.timeLabel.textColor = .black
         addTaskView.alertLabel.textColor = .black
         addTaskView.conteinerView.backgroundColor = theme.color25
-        
-        
     }
-    
-    
     
     private func callSettings() {
         //натискання кнопки назад
@@ -151,12 +139,17 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                 print("Error saving task: \(error)")
             }
             
-            scheduleNotification(for: editedTask)
+            if !addTaskView.alertSwitch.isOn {
+                removeNotification(for: editedTask)
+            } else {
+                scheduleNotification(for: editedTask)
+            }
+            
+            
             navigateToTasksViewController()
         }
     }
 
-    
     //натискання кнопки створити
   
     @objc func createButtonPressed() {
@@ -197,7 +190,6 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         scheduleNotification(for: task)
         navigateToTasksViewController()
     }
-    
     
     func scheduleNotification(for task: DataTask) {
         let calendar = Calendar.current
@@ -247,16 +239,17 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
-    
-    
+    func removeNotification(for task: DataTask) {
+        if let notificationId = task.notificationId {
+            notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationId])
+        }
+    }
     
     func formattedDate(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: addTaskView.timePicker.date)
     }
-    
-    
     
     func updateUI() {
         guard let task = task else { return }
@@ -266,6 +259,5 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         addTaskView.descriptionTextView.text = task.taskDescription
         addTaskView.alertSwitch.isOn = task.reminder
     }
-    
 }
 
