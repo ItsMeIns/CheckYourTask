@@ -39,18 +39,35 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: - intents -
     @objc private func themeChanged() {
-            updateInterfaceWithTheme()
-        }
+        updateInterfaceWithTheme()
+    }
     
     private func updateInterfaceWithTheme() {
         guard let theme = ThemeManager.shared.selectedTheme else {
             return
         }
         view.backgroundColor = theme.color45
-        addTaskView.dateLabel.textColor = .black
-        addTaskView.timeLabel.textColor = .black
-        addTaskView.alertLabel.textColor = .black
+        addTaskView.cancelButton.backgroundColor = theme.color25
+        addTaskView.createButton.backgroundColor = theme.color25
+        
         addTaskView.conteinerView.backgroundColor = theme.color25
+        
+        if theme.title == "themeCocoa" || theme.title == "themePink" {
+            addTaskView.dateLabel.textColor = .black
+            addTaskView.timeLabel.textColor = .black
+            addTaskView.alertLabel.textColor = .black
+            addTaskView.cancelButton.setTitleColor(UIColor.black, for: .normal)
+            addTaskView.createButton.setTitleColor(UIColor.black, for: .normal)
+            
+        } else {
+            addTaskView.dateLabel.textColor = .white
+            addTaskView.timeLabel.textColor = .white
+            addTaskView.alertLabel.textColor = .white
+            addTaskView.cancelButton.setTitleColor(UIColor.white, for: .normal)
+            addTaskView.createButton.setTitleColor(UIColor.white, for: .normal)
+            
+        }
+        
     }
     
     private func callSettings() {
@@ -59,12 +76,9 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         
         //перемикач edit/create
         if isEditMode {
-            title = "Edit Task"
             addTaskView.createButton.setTitle("Edit", for: .normal)
             addTaskView.createButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
-
         } else {
-            title = "Create Task"
             addTaskView.createButton.setTitle("Create", for: .normal)
             addTaskView.createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
             
@@ -149,9 +163,9 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
             navigateToTasksViewController()
         }
     }
-
+    
     //натискання кнопки створити
-  
+    
     @objc func createButtonPressed() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return

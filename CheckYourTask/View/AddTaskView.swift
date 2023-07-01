@@ -40,7 +40,7 @@ class AddTaskView {
         let label = UILabel()
         label.text = "Date"
         label.font = UIFont.boldSystemFont(ofSize: 17)
-      
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -49,6 +49,12 @@ class AddTaskView {
     let datePicker: UIDatePicker = {
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .date
+        datePicker.backgroundColor = .white
+        
+        for subview in datePicker.subviews {
+            subview.backgroundColor = .white
+            subview.layer.cornerRadius = 15
+        }
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         return datePicker
     }()
@@ -58,7 +64,7 @@ class AddTaskView {
         let label = UILabel()
         label.text = "Time"
         label.font = UIFont.boldSystemFont(ofSize: 17)
-       
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -67,6 +73,12 @@ class AddTaskView {
     let timePicker: UIDatePicker = {
         let timePicker = UIDatePicker()
         timePicker.datePickerMode = .time
+        timePicker.backgroundColor = .white
+        
+        for subview in timePicker.subviews {
+            subview.backgroundColor = .white
+            subview.layer.cornerRadius = 15
+        }
         timePicker.locale = Locale(identifier: "en_GB")
         timePicker.translatesAutoresizingMaskIntoConstraints = false
         return timePicker
@@ -87,7 +99,7 @@ class AddTaskView {
         let label = UILabel()
         label.text = "Alert"
         label.font = UIFont.boldSystemFont(ofSize: 17)
-      
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -145,46 +157,46 @@ class AddTaskView {
         taskNameTextField.topAnchor.constraint(equalTo: conteinerView.topAnchor, constant: 20).isActive = true
         taskNameTextField.leadingAnchor.constraint(equalTo: conteinerView.leadingAnchor, constant: 20).isActive = true
         taskNameTextField.trailingAnchor.constraint(equalTo: conteinerView.trailingAnchor, constant: -20).isActive = true
-
+        
         //date label
         conteinerView.addSubview(dateLabel)
         dateLabel.topAnchor.constraint(equalTo: taskNameTextField.bottomAnchor, constant: 30).isActive = true
         dateLabel.leadingAnchor.constraint(equalTo: conteinerView.leadingAnchor, constant: 30).isActive = true
-
+        
         //date picker
         conteinerView.addSubview(datePicker)
         datePicker.topAnchor.constraint(equalTo: taskNameTextField.bottomAnchor, constant: 24).isActive = true
-       
+        
         datePicker.trailingAnchor.constraint(equalTo: conteinerView.trailingAnchor, constant: -20).isActive = true
-
+        
         //time label
         conteinerView.addSubview(timeLabel)
         timeLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 25).isActive = true
         timeLabel.leadingAnchor.constraint(equalTo: conteinerView.leadingAnchor, constant: 30).isActive = true
-
+        
         //time picker
         conteinerView.addSubview(timePicker)
         timePicker.topAnchor.constraint(equalTo: datePicker.bottomAnchor, constant: 10).isActive = true
-       
+        
         timePicker.trailingAnchor.constraint(equalTo: conteinerView.trailingAnchor, constant: -20).isActive = true
-
+        
         //description text view
         conteinerView.addSubview(descriptionTextView)
         descriptionTextView.topAnchor.constraint(equalTo: timePicker.bottomAnchor, constant: 20).isActive = true
         descriptionTextView.leadingAnchor.constraint(equalTo: conteinerView.leadingAnchor, constant: 20).isActive = true
         descriptionTextView.trailingAnchor.constraint(equalTo: conteinerView.trailingAnchor, constant: -20).isActive = true
         descriptionTextView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-
+        
         //alert label
         conteinerView.addSubview(alertLabel)
         alertLabel.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 20).isActive = true
         alertLabel.leadingAnchor.constraint(equalTo: conteinerView.leadingAnchor, constant: 30).isActive = true
-
+        
         //alert switch
         conteinerView.addSubview(alertSwitch)
         alertSwitch.topAnchor.constraint(equalTo: descriptionTextView.bottomAnchor, constant: 15).isActive = true
         alertSwitch.trailingAnchor.constraint(equalTo: conteinerView.trailingAnchor, constant: -20).isActive = true
-
+        
         //cancel button
         addTaskViewController.view.addSubview(cancelButton)
         cancelButton.heightAnchor.constraint(equalToConstant: 50).isActive = true

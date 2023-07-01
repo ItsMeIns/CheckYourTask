@@ -8,11 +8,12 @@
 import UIKit
 
 class TaskTableViewCell: UITableViewCell {
-   
+    
     //MARK: - properties -
     weak var tasksViewController: TasksViewController?
     var contentViewColor: UIColor?
     var cellContentViewColor: UIColor?
+    
     
     let nameLabel: UILabel = {
         let label = UILabel()
@@ -48,9 +49,9 @@ class TaskTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super .init(style: style, reuseIdentifier: reuseIdentifier)
         
-        nameLabel.font = UIFont.systemFont(ofSize: 16)
-        nameLabel.textColor = UIColor.black
-        nameLabel.numberOfLines = 0
+        nameLabel.font = UIFont.boldSystemFont(ofSize: 19)
+        
+        nameLabel.numberOfLines = 3
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -58,7 +59,7 @@ class TaskTableViewCell: UITableViewCell {
         cellContentView.addSubview(nameLabel)
         
         timeLabel.font = UIFont.systemFont(ofSize: 12)
-        timeLabel.textColor = UIColor.black
+        
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         cellContentView.addSubview(timeLabel)
         
@@ -73,12 +74,13 @@ class TaskTableViewCell: UITableViewCell {
         contentView.addSubview(cellContentView)
         
         NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 20),
+            nameLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 8),
             nameLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor, constant: -80),
-            nameLabel.topAnchor.constraint(equalTo: cellContentView.topAnchor, constant: 20),
-            timeLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 20),
-            timeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5),
-            timeLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -8),
+            nameLabel.topAnchor.constraint(equalTo: cellContentView.topAnchor, constant: 8),
+            nameLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -8),
+            timeLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor, constant: -20),
+            timeLabel.topAnchor.constraint(equalTo: checkBoxButton.bottomAnchor, constant: 8),
+            timeLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -16),
             reminderImageView.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor, constant: -60),
             reminderImageView.centerYAnchor.constraint(equalTo: cellContentView.centerYAnchor),
             reminderImageView.widthAnchor.constraint(equalToConstant: 20),
@@ -157,8 +159,23 @@ class TaskTableViewCell: UITableViewCell {
     }
     
     func updateInterfaceWithTheme() {
+        guard let theme = ThemeManager.shared.selectedTheme else {
+            return
+        }
+        
+        
+        if theme.title == "themeCocoa" || theme.title == "themePink" {
+            nameLabel.textColor = .black
+            timeLabel.textColor = .black
+        } else {
+            nameLabel.textColor = .white
+            timeLabel.textColor = .white
+        }
+        
         contentView.backgroundColor = contentViewColor
         cellContentView.backgroundColor = cellContentViewColor
+        
+        
     }
     
 }

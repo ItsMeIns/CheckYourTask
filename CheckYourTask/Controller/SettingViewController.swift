@@ -38,18 +38,33 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
     
     @objc private func themeChanged() {
         if let themeIndex = tasksVC.themeData.firstIndex(of: ThemeManager.shared.selectedTheme!) {
-                ThemeManager.shared.saveSelectedThemeIndex(themeIndex)
-            }
-            updateInterfaceWithTheme()
+            ThemeManager.shared.saveSelectedThemeIndex(themeIndex)
         }
+        updateInterfaceWithTheme()
+    }
     
     private func updateInterfaceWithTheme() {
-            guard let theme = ThemeManager.shared.selectedTheme else {
-                return
-            }
+        guard let theme = ThemeManager.shared.selectedTheme else {
+            return
+        }
         view.backgroundColor = theme.color45
         settingsView.collectionView.backgroundColor = theme.color45
+        settingsView.saveButton.backgroundColor = theme.color25
+        
+        
+        if theme.title == "themeCocoa" || theme.title == "themePink" || theme.title == "themeWhite" {
+            settingsView.chooseThemeLabel.textColor = .black
+        } else {
+            settingsView.chooseThemeLabel.textColor = .white
         }
+        
+        if theme.title == "themeCocoa" || theme.title == "themePink" {
+            settingsView.saveButton.setTitleColor(UIColor.black, for: .normal)
+        } else {
+            settingsView.saveButton.setTitleColor(UIColor.white, for: .normal)
+        }
+        
+    }
     
     //save button
     func saveSettings() {
@@ -66,7 +81,7 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
         navigationController?.view.layer.add(transition, forKey: nil)
         navigationController?.pushViewController(backToTaskVC, animated: false)
         navigationController?.setNavigationBarHidden(true, animated: false)
-     }
+    }
     
     // collectionView delegate & datasource
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

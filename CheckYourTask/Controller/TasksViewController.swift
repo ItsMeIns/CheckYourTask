@@ -40,8 +40,11 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var taskDates: [DataTask] = []
     
     let themeData = [
-        ThemeData(title: "themeWhite", image: #imageLiteral(resourceName: "themeWhite"), color45: #colorLiteral(red: 0.9662925601, green: 0.9359712005, blue: 0.9023753405, alpha: 1), color25: #colorLiteral(red: 0.8632949591, green: 0.7654848695, blue: 0.7064731717, alpha: 1), color20: #colorLiteral(red: 0.2705166936, green: 0.4434500039, blue: 0.6271486878, alpha: 1), color10: #colorLiteral(red: 0.1030795798, green: 0.2106405497, blue: 0.3431667686, alpha: 1)),
-        ThemeData(title: "themeBlack", image: #imageLiteral(resourceName: "themeBlack"),  color45: #colorLiteral(red: 0.1345694363, green: 0.2182236314, blue: 0.3096637726, alpha: 1), color25: #colorLiteral(red: 0.2919410765, green: 0.4307475984, blue: 0.5186447501, alpha: 1), color20: #colorLiteral(red: 0.5955082178, green: 0.701184094, blue: 0.7551148534, alpha: 1), color10: #colorLiteral(red: 0.8588636518, green: 0.903434813, blue: 0.9322379231, alpha: 1))
+        ThemeData(title: "themeCocoa", image: #imageLiteral(resourceName: "themeCocoa"), color45: #colorLiteral(red: 0.9662925601, green: 0.9359712005, blue: 0.9023753405, alpha: 1), color25: #colorLiteral(red: 0.8632949591, green: 0.7654848695, blue: 0.7064731717, alpha: 1), color20: #colorLiteral(red: 0.2705166936, green: 0.4434500039, blue: 0.6271486878, alpha: 1), color10: #colorLiteral(red: 0.1030795798, green: 0.2106405497, blue: 0.3431667686, alpha: 1)),
+        ThemeData(title: "themeBlack", image: #imageLiteral(resourceName: "themeBlack"),  color45: #colorLiteral(red: 0.1345694363, green: 0.2182236314, blue: 0.3096637726, alpha: 1), color25: #colorLiteral(red: 0.2919410765, green: 0.4307475984, blue: 0.5186447501, alpha: 1), color20: #colorLiteral(red: 0.5955082178, green: 0.701184094, blue: 0.7551148534, alpha: 1), color10: #colorLiteral(red: 0.8588636518, green: 0.903434813, blue: 0.9322379231, alpha: 1)),
+        ThemeData(title: "themeDark", image: #imageLiteral(resourceName: "themeDark"), color45: #colorLiteral(red: 0, green: 0.1098039216, blue: 0.1882352941, alpha: 1), color25: #colorLiteral(red: 0.09019607843, green: 0.4196078431, blue: 0.5294117647, alpha: 1), color20: #colorLiteral(red: 0.3921568627, green: 0.8, blue: 0.7725490196, alpha: 1), color10: #colorLiteral(red: 0.8549019608, green: 1, blue: 0.9843137255, alpha: 1)),
+        ThemeData(title: "themePink", image: #imageLiteral(resourceName: "themePink"), color45: #colorLiteral(red: 1, green: 0.7803921569, blue: 0.7803921569, alpha: 1), color25: #colorLiteral(red: 1, green: 0.8862745098, blue: 0.8862745098, alpha: 1), color20: #colorLiteral(red: 0.9647058824, green: 0.9647058824, blue: 0.9647058824, alpha: 1), color10: #colorLiteral(red: 0.5294117647, green: 0.5215686275, blue: 0.6352941176, alpha: 1)),
+        ThemeData(title: "themeWhite", image: #imageLiteral(resourceName: "themeWhite"), color45: #colorLiteral(red: 0.9450980392, green: 0.9647058824, blue: 0.9764705882, alpha: 1), color25: #colorLiteral(red: 0.2235294118, green: 0.2823529412, blue: 0.4039215686, alpha: 1), color20: #colorLiteral(red: 0.1294117647, green: 0.1647058824, blue: 0.2431372549, alpha: 1), color10: #colorLiteral(red: 0.6078431373, green: 0.6431372549, blue: 0.7098039216, alpha: 1))
     ]
     
     //MARK: - life cycle -
@@ -107,12 +110,12 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         let updatedImage = taskView.addTaskButton.currentImage?.withTintColor(theme.color20!, renderingMode: .alwaysOriginal)
         taskView.addTaskButton.setImage(updatedImage, for: .normal)
         taskView.avatarSettings.layer.borderColor = theme.color20?.cgColor
-        taskView.percentagesMadeLayer.textColor = theme.color10
-        taskView.addProgressView.progressTintColor = theme.color10
+        taskView.percentagesMadeLayer.textColor = theme.color20
+        taskView.addProgressView.progressTintColor = theme.color20
         taskView.contentView.backgroundColor = theme.color25
         calendar.appearance.headerTitleColor = theme.color10
         calendar.appearance.weekdayTextColor = theme.color10
-        calendar.appearance.titleDefaultColor = theme.color20
+        calendar.appearance.titleDefaultColor = theme.color10
         calendar.appearance.eventDefaultColor = theme.color10
         calendar.appearance.eventSelectionColor = theme.color10
         calendar.appearance.todayColor = .darkGray
@@ -371,7 +374,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 90
+        return 120
     }
     
     

@@ -30,14 +30,26 @@ class DetailedViewController: UIViewController {
     //MARK: - intents -
     
     @objc private func themeChanged() {
-            updateInterfaceWithTheme()
-        }
+        updateInterfaceWithTheme()
+    }
     
     private func updateInterfaceWithTheme() {
         guard let theme = ThemeManager.shared.selectedTheme else {
             return
         }
         view.backgroundColor = theme.color45
+        detailedView.backgroundView.backgroundColor = theme.color25
+        detailedView.cancelButton.backgroundColor = theme.color25
+        detailedView.editButton.backgroundColor = theme.color25
+        
+        
+        if theme.title == "themeCocoa" || theme.title == "themePink" {
+            detailedView.cancelButton.setTitleColor(UIColor.black, for: .normal)
+            detailedView.editButton.setTitleColor(UIColor.black, for: .normal)
+        } else {
+            detailedView.cancelButton.setTitleColor(UIColor.white, for: .normal)
+            detailedView.editButton.setTitleColor(UIColor.white, for: .normal)
+        }
     }
     
     @objc func cancelButtonTapped() {
