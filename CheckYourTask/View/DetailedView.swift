@@ -79,8 +79,8 @@ class DetailedView {
         cancelButton.clipsToBounds = true
         cancelButton.layer.borderWidth = 2
         cancelButton.layer.borderColor = UIColor.black.cgColor
-        cancelButton.backgroundColor = UIColor(named: "ColorCancel")
-        cancelButton.setTitle("Cancel", for: .normal)
+      
+        cancelButton.setTitle(HomeStrings.cancelButton.translation, for: .normal)
         cancelButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         cancelButton.setTitleColor(UIColor.black, for: .normal)
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
@@ -94,8 +94,8 @@ class DetailedView {
         editButton.clipsToBounds = true
         editButton.layer.borderWidth = 2
         editButton.layer.borderColor = UIColor.black.cgColor
-        editButton.backgroundColor = UIColor(named: "ColorCreate")
-        editButton.setTitle("Edit", for: .normal)
+
+        editButton.setTitle(HomeStrings.editButton.translation, for: .normal)
         editButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         editButton.setTitleColor(UIColor.black, for: .normal)
         editButton.translatesAutoresizingMaskIntoConstraints = false

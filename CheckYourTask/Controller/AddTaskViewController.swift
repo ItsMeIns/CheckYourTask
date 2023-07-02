@@ -20,6 +20,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
     let notificationCenter = UNUserNotificationCenter.current()
     var isEditMode = false
     
+    
     //MARK: - life cycle -
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,12 +33,19 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         updateUI()
         callSettings()
         
+        updateThemeUI()
         
+        
+        
+
+    }
+    
+    //MARK: - intents -
+    private func updateThemeUI() {
         NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
         updateInterfaceWithTheme()
     }
     
-    //MARK: - intents -
     @objc private func themeChanged() {
         updateInterfaceWithTheme()
     }
@@ -76,10 +84,10 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         
         //перемикач edit/create
         if isEditMode {
-            addTaskView.createButton.setTitle("Edit", for: .normal)
+            addTaskView.createButton.setTitle(HomeStrings.editButton.translation, for: .normal)
             addTaskView.createButton.addTarget(self, action: #selector(editButtonPressed), for: .touchUpInside)
         } else {
-            addTaskView.createButton.setTitle("Create", for: .normal)
+            addTaskView.createButton.setTitle(HomeStrings.createButton.translation, for: .normal)
             addTaskView.createButton.addTarget(self, action: #selector(createButtonPressed), for: .touchUpInside)
             
         }
@@ -166,44 +174,51 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
     
     //натискання кнопки створити
     
-    @objc func createButtonPressed() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-            return
-        }
-        let context = appDelegate.persistentContainer.viewContext
-        
-        guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context),
-              let taskName = addTaskView.taskNameTextField.text,
-              let taskDescription = addTaskView.descriptionTextView.text else {
-            return
-        }
-        
-        let task = DataTask(entity: entityDescription, insertInto: context)
-        task.taskName = taskName
-        task.taskDescription = taskDescription
-        task.date = addTaskView.datePicker.date
-        task.time = addTaskView.timePicker.date
-        task.reminder = addTaskView.alertSwitch.isOn
-        task.isComplete = false
-        
-        do {
-            try context.save()
-            
-            if let tasksViewController = tasksVC {
-                tasksViewController.tasks.append(task)
-                tasksViewController.taskDates.append(task)
-                tasksViewController.tableView.reloadData()
-                tasksViewController.calendar.reloadData()
-                tasksViewController.updateProgress()
+        @objc func createButtonPressed() {
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                return
+            }
+            let context = appDelegate.persistentContainer.viewContext
+    
+            guard let entityDescription = NSEntityDescription.entity(forEntityName: "DataTask", in: context),
+                  let taskName = addTaskView.taskNameTextField.text,
+                  let taskDescription = addTaskView.descriptionTextView.text else {
+                return
             }
             
-        } catch {
-            print("Error saving task: \(error)")
+            let task = DataTask(entity: entityDescription, insertInto: context)
+            task.taskName = taskName
+            task.taskDescription = taskDescription
+            task.date = addTaskView.datePicker.date
+            task.time = addTaskView.timePicker.date
+            task.reminder = addTaskView.alertSwitch.isOn
+            task.isComplete = false
+    
+            do {
+                try context.save()
+    
+                if let tasksViewController = tasksVC {
+                    tasksViewController.tasks.append(task)
+                    tasksViewController.taskDates.append(task)
+                    tasksViewController.tableView.reloadData()
+                    tasksViewController.calendar.reloadData()
+                    tasksViewController.updateProgress()
+                }
+    
+            } catch {
+                print("Error saving task: \(error)")
+            }
+    
+            scheduleNotification(for: task)
+            navigateToTasksViewController()
         }
-        
-        scheduleNotification(for: task)
-        navigateToTasksViewController()
-    }
+    
+    
+   
+
+
+
+
     
     func scheduleNotification(for task: DataTask) {
         let calendar = Calendar.current
@@ -274,4 +289,5 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         addTaskView.alertSwitch.isOn = task.reminder
     }
 }
+
 

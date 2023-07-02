@@ -73,14 +73,8 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         saveSelectedDateUD()
         
         
+        updateThemeUI()
         
-        //кудись сховати
-        if let calendarBackgroundViewHeight = UserDefaults.standard.value(forKey: "calendarBackgroundViewHeight") as? CGFloat {
-            calendarBackgroundViewHeightConstraint.constant = calendarBackgroundViewHeight
-        }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
-        updateInterfaceWithTheme()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,6 +88,18 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     //MARK: - intents -
+    
+    
+    private func updateThemeUI() {
+        if let calendarBackgroundViewHeight = UserDefaults.standard.value(forKey: "calendarBackgroundViewHeight") as? CGFloat {
+            calendarBackgroundViewHeightConstraint.constant = calendarBackgroundViewHeight
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
+        updateInterfaceWithTheme()
+     }
+    
+    
     
     @objc private func themeChanged() {
         updateInterfaceWithTheme()
@@ -120,7 +126,11 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         calendar.appearance.eventSelectionColor = theme.color10
         calendar.appearance.todayColor = .darkGray
         calendar.appearance.selectionColor = .black
+        
     }
+    
+    
+    
     
     //save the current date
     func saveSelectedDateUD() {
@@ -376,9 +386,6 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 120
     }
-    
-    
-    
 }
 
 //MARK: - Calendar Delegate, DataSource -

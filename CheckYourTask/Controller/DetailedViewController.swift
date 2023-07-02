@@ -22,12 +22,16 @@ class DetailedViewController: UIViewController {
         updateUI()
         callSettings()
         
+        updateThemeUI()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
-        updateInterfaceWithTheme()
     }
     
     //MARK: - intents -
+    
+    private func updateThemeUI() {
+        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
+        updateInterfaceWithTheme()
+    }
     
     @objc private func themeChanged() {
         updateInterfaceWithTheme()

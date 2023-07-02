@@ -26,7 +26,7 @@ class AddTaskView {
     let taskNameTextField: UITextField = {
         let taskName = UITextField()
         taskName.backgroundColor = .white
-        taskName.placeholder = "Task name"
+        taskName.placeholder = HomeStrings.taskNameTextField.translation
         taskName.layer.cornerRadius = 5
         let leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: 1))
         taskName.leftView = leftView
@@ -38,7 +38,7 @@ class AddTaskView {
     // - date label -
     let dateLabel: UILabel = {
         let label = UILabel()
-        label.text = "Date"
+        label.text = HomeStrings.dateLabel.translation
         label.font = UIFont.boldSystemFont(ofSize: 17)
         
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -62,7 +62,7 @@ class AddTaskView {
     // - time label -
     let timeLabel: UILabel = {
         let label = UILabel()
-        label.text = "Time"
+        label.text = HomeStrings.timeLabel.translation
         label.font = UIFont.boldSystemFont(ofSize: 17)
         
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -97,9 +97,8 @@ class AddTaskView {
     // - alert label -
     let alertLabel: UILabel = {
         let label = UILabel()
-        label.text = "Alert"
+        label.text = HomeStrings.alertLabel.translation
         label.font = UIFont.boldSystemFont(ofSize: 17)
-        
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -108,7 +107,6 @@ class AddTaskView {
     let alertSwitch: UISwitch = {
         let alertSwitch = UISwitch()
         alertSwitch.isOn = false
-        
         alertSwitch.translatesAutoresizingMaskIntoConstraints = false
         return alertSwitch
     }()
@@ -120,10 +118,10 @@ class AddTaskView {
         cancelButton.clipsToBounds = true
         cancelButton.layer.borderWidth = 2
         cancelButton.layer.borderColor = UIColor.black.cgColor
-        cancelButton.backgroundColor = UIColor(named: "ColorCancel")
-        cancelButton.setTitle("Cancel", for: .normal)
+        
+        cancelButton.setTitle(HomeStrings.cancelButton.translation, for: .normal)
         cancelButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        cancelButton.setTitleColor(UIColor.black, for: .normal)
+        
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
         return cancelButton
     }()
@@ -135,10 +133,10 @@ class AddTaskView {
         createButton.clipsToBounds = true
         createButton.layer.borderWidth = 2
         createButton.layer.borderColor = UIColor.black.cgColor
-        createButton.backgroundColor = UIColor(named: "ColorCreate")
-        createButton.setTitle("Create", for: .normal)
+        
+        createButton.setTitle(HomeStrings.createButton.translation, for: .normal)
         createButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        createButton.setTitleColor(UIColor.black, for: .normal)
+        
         createButton.translatesAutoresizingMaskIntoConstraints = false
         return createButton
     }()

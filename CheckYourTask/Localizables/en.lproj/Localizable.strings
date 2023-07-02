@@ -1,0 +1,20 @@
+/* 
+  Localizable.strings
+  CheckYourTask
+
+  Created by macbook on 02.07.2023.
+  
+*/
+
+//AddTaskView
+"HomeStrings_taskNameTextField" = "Task name";
+"HomeStrings_dateLabel" = "Date";
+"HomeStrings_timeLabel" = "Time";
+"HomeStrings_alertLabel" = "Alert";
+"HomeStrings_createButton" = "Create";
+//DetailedView
+"HomeStrings_editButton" = "Edit";
+"HomeStrings_cancelButton" = "Cancel";
+//SettingsView
+"HomeStrings_chooseThemeLabel" = "Choose theme";
+"HomeStrings_saveButton" = "Save";

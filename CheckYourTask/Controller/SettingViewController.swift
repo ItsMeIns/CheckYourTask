@@ -7,14 +7,17 @@
 
 import UIKit
 
-class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     
     //MARK: - properties -
     let settingsView = SettingsView()
     let tasksVC = TasksViewController()
+   
     
+    var selectedImage: UIImage?
     
+    let  defaults = UserDefaults.standard
     
     //MARK: - content -
     
@@ -28,13 +31,19 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
         settingsView.collectionView.dataSource = self
         settingsView.setupConstraints()
         saveSettings()
+        callGallery()
+        updateThemeUI()
         
         
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
-        updateInterfaceWithTheme()
+
     }
     
     //MARK: - intents -
+    
+    private func updateThemeUI() {
+        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
+        updateInterfaceWithTheme()
+    }
     
     @objc private func themeChanged() {
         if let themeIndex = tasksVC.themeData.firstIndex(of: ThemeManager.shared.selectedTheme!) {
@@ -63,8 +72,36 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
         } else {
             settingsView.saveButton.setTitleColor(UIColor.white, for: .normal)
         }
-        
     }
+    
+    // - avatar -
+    func callGallery() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showGallery))
+        settingsView.avatar.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func showGallery() {
+        print("show gallery pressed")
+        
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.sourceType = . photoLibrary
+        imagePickerController.delegate = self
+        present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let selectedImage = info[.originalImage] as? UIImage {
+            self.selectedImage = selectedImage
+            
+            settingsView.avatar.image = selectedImage
+         }
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
     
     //save button
     func saveSettings() {
@@ -82,6 +119,7 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
         navigationController?.pushViewController(backToTaskVC, animated: false)
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
+
     
     // collectionView delegate & datasource
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

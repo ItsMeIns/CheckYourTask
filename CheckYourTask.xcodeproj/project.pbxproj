@@ -23,6 +23,8 @@
 		FAA7AC662A3A8050000367D5 /* DetailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA7AC652A3A8050000367D5 /* DetailedView.swift */; };
 		FAADCDD12A169F6200FD51C1 /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD02A169F6200FD51C1 /* TaskView.swift */; };
 		FAADCDD72A23AE6F00FD51C1 /* TaskTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */; };
+		FAC511DF2A517D180099DFFC /* HomeStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC511DE2A517D180099DFFC /* HomeStrings.swift */; };
+		FAC511E22A517D550099DFFC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FAC511E42A517D550099DFFC /* Localizable.strings */; };
 		FADB345F2A34A010003AD8ED /* DetailedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADB345E2A34A010003AD8ED /* DetailedViewController.swift */; };
 		FAE608922A44632E005AA48E /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE608912A44632E005AA48E /* ThemeManager.swift */; };
 /* End PBXBuildFile section */
@@ -48,6 +50,9 @@
 		FAA7AC652A3A8050000367D5 /* DetailedView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedView.swift; sourceTree = "<group>"; };
 		FAADCDD02A169F6200FD51C1 /* TaskView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		FAADCDD62A23AE6F00FD51C1 /* TaskTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskTableViewCell.swift; sourceTree = "<group>"; };
+		FAC511DE2A517D180099DFFC /* HomeStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeStrings.swift; sourceTree = "<group>"; };
+		FAC511E32A517D550099DFFC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FAC511E52A517D7A0099DFFC /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		FADB345E2A34A010003AD8ED /* DetailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedViewController.swift; sourceTree = "<group>"; };
 		FAE608912A44632E005AA48E /* ThemeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -113,6 +118,7 @@
 			children = (
 				FA611A7A2A011B0A0080A3E4 /* AppDelegate.swift */,
 				FA611A7C2A011B0A0080A3E4 /* SceneDelegate.swift */,
+				FAC511DD2A517CF10099DFFC /* Localizables */,
 				FA611A912A0120CF0080A3E4 /* Model */,
 				FA611A922A0120DC0080A3E4 /* View */,
 				FA611A932A0120E50080A3E4 /* Controller */,
@@ -154,6 +160,15 @@
 				FA132D7E2A3FA9F0007F380A /* SettingViewController.swift */,
 			);
 			path = Controller;
+			sourceTree = "<group>";
+		};
+		FAC511DD2A517CF10099DFFC /* Localizables */ = {
+			isa = PBXGroup;
+			children = (
+				FAC511DE2A517D180099DFFC /* HomeStrings.swift */,
+				FAC511E42A517D550099DFFC /* Localizable.strings */,
+			);
+			path = Localizables;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -200,6 +215,7 @@
 			knownRegions = (
 				en,
 				Base,
+				uk,
 			);
 			mainGroup = FA611A6E2A011B0A0080A3E4;
 			productRefGroup = FA611A782A011B0A0080A3E4 /* Products */;
@@ -217,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FA611A8A2A011B0B0080A3E4 /* LaunchScreen.storyboard in Resources */,
+				FAC511E22A517D550099DFFC /* Localizable.strings in Resources */,
 				FA611A872A011B0B0080A3E4 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -285,6 +302,7 @@
 				FA611A7D2A011B0A0080A3E4 /* SceneDelegate.swift in Sources */,
 				FA132D7D2A3FA9E1007F380A /* SettingsView.swift in Sources */,
 				FA132D7F2A3FA9F0007F380A /* SettingViewController.swift in Sources */,
+				FAC511DF2A517D180099DFFC /* HomeStrings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +317,15 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		FAC511E42A517D550099DFFC /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FAC511E32A517D550099DFFC /* en */,
+				FAC511E52A517D7A0099DFFC /* uk */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -306,6 +333,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -366,6 +394,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -429,8 +458,7 @@
 				INFOPLIST_FILE = CheckYourTask/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -458,8 +486,7 @@
 				INFOPLIST_FILE = CheckYourTask/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
