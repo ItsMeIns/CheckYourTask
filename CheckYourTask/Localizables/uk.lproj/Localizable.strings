@@ -18,4 +18,4 @@
 //SettingsView
 "HomeStrings_chooseThemeLabel" = "Оберіть тему";
 "HomeStrings_saveButton" = "Зберігти";
-
+"HomeStrings_notification" = "Нагадування про завдання";

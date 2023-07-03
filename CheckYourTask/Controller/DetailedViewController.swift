@@ -86,3 +86,18 @@ class DetailedViewController: UIViewController {
     }
 }
 
+extension DetailedViewController: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        if UIApplication.shared.applicationState == .active {
+            
+            let alertController = UIAlertController(title: HomeStrings.notification.translation, message: notification.request.content.body, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(okAction)
+            present(alertController, animated: true, completion: nil)
+            completionHandler([])
+        } else {
+            completionHandler([.banner, .sound])
+        }
+    }
+}

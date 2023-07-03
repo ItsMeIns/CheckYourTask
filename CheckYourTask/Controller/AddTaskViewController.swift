@@ -36,7 +36,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         updateThemeUI()
         
         
-        
+        notificationCenter.delegate = self
 
     }
     
@@ -214,12 +214,6 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
         }
     
     
-   
-
-
-
-
-    
     func scheduleNotification(for task: DataTask) {
         let calendar = Calendar.current
         let selectedDate = addTaskView.datePicker.date
@@ -291,3 +285,18 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
 }
 
 
+extension AddTaskViewController: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        if UIApplication.shared.applicationState == .active {
+            
+            let alertController = UIAlertController(title: HomeStrings.notification.translation, message: notification.request.content.body, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(okAction)
+            present(alertController, animated: true, completion: nil)
+            completionHandler([])
+        } else {
+            completionHandler([.banner, .sound])
+        }
+    }
+}

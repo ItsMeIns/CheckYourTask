@@ -21,6 +21,7 @@ enum HomeStrings: String {
     //SettingsView
     case chooseThemeLabel
     case saveButton
+    case notification
     
     var translation: String {
         NSLocalizedString(String(describing: Self.self) + "_\(rawValue)", comment: "")
