@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     
@@ -34,11 +35,21 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
         callGallery()
         updateThemeUI()
         
-        
+        setAvatarImage()
 
     }
     
     //MARK: - intents -
+    
+    private func setAvatarImage() {
+        let savedImages = DataBaseHelper.shareInstance.fetchImage()
+        if let imageData = savedImages.last?.img {
+            let savedImage = UIImage(data: imageData)
+            settingsView.avatar.image = savedImage
+        } else {
+            settingsView.avatar.image = UIImage(named: "avatarImage")
+        }
+    }
     
     private func updateThemeUI() {
         NotificationCenter.default.addObserver(self, selector: #selector(themeChanged), name: NSNotification.Name("ThemeChangedNotification"), object: nil)
@@ -92,7 +103,7 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let selectedImage = info[.originalImage] as? UIImage {
             self.selectedImage = selectedImage
-            
+           
             settingsView.avatar.image = selectedImage
          }
         picker.dismiss(animated: true, completion: nil)
@@ -103,6 +114,7 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     
+    
     //save button
     func saveSettings() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(saveButtonTapped))
@@ -110,6 +122,11 @@ class SettingViewController: UIViewController, UICollectionViewDelegateFlowLayou
     }
     
     @objc func saveButtonTapped() {
+        
+        if let imageData = selectedImage?.pngData() {
+            DataBaseHelper.shareInstance.saveImage(data: imageData)
+        }
+        
         let backToTaskVC = TasksViewController()
         let transition = CATransition()
         transition.duration = 0.3

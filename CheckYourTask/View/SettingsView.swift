@@ -14,7 +14,6 @@ class SettingsView {
     //MARK: - avatar + settings -
     let avatar: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "avatarImage")
         imageView.layer.cornerRadius = 30
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -22,6 +21,7 @@ class SettingsView {
         imageView.layer.borderColor = UIColor.black.cgColor
         imageView.isUserInteractionEnabled = true //взаємодія як кнопка
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        
         return imageView
     }()
     
@@ -79,8 +79,8 @@ class SettingsView {
         settingViewController.view.addSubview(collectionView)
         collectionView.heightAnchor.constraint(equalTo: collectionView.widthAnchor, multiplier: 0.5).isActive = true
         collectionView.topAnchor.constraint(equalTo: settingViewController.view.topAnchor, constant: 300 ).isActive = true
-        collectionView.leadingAnchor.constraint(equalTo: settingViewController.view.leadingAnchor, constant: 40 ).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: settingViewController.view.trailingAnchor, constant: -40 ).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: settingViewController.view.leadingAnchor, constant: 4 ).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: settingViewController.view.trailingAnchor, constant: -4 ).isActive = true
         
         // - save -
         settingViewController.view.addSubview(saveButton)

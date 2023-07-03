@@ -74,7 +74,7 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         
         updateThemeUI()
-        
+        setAvatarImage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -89,6 +89,15 @@ class TasksViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     //MARK: - intents -
     
+    private func setAvatarImage() {
+        let savedImages = DataBaseHelper.shareInstance.fetchImage()
+        if let imageData = savedImages.last?.img {
+            let savedImage = UIImage(data: imageData)
+            taskView.avatarSettings.image = savedImage
+        } else {
+            taskView.avatarSettings.image = UIImage(named: "avatarImage")
+        }
+    }
     
     private func updateThemeUI() {
         if let calendarBackgroundViewHeight = UserDefaults.standard.value(forKey: "calendarBackgroundViewHeight") as? CGFloat {

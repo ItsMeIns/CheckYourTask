@@ -74,7 +74,7 @@ class TaskTableViewCell: UITableViewCell {
         contentView.addSubview(cellContentView)
         
         NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 8),
+            nameLabel.leadingAnchor.constraint(equalTo: cellContentView.leadingAnchor, constant: 16),
             nameLabel.trailingAnchor.constraint(equalTo: cellContentView.trailingAnchor, constant: -80),
             nameLabel.topAnchor.constraint(equalTo: cellContentView.topAnchor, constant: 8),
             nameLabel.bottomAnchor.constraint(equalTo: cellContentView.bottomAnchor, constant: -8),
