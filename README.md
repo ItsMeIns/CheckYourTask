@@ -17,5 +17,16 @@ ___
 
 Завдяки цим особливостям CheckYourTask стає потужним інструментом для керування завданнями, допомагаючи користувачам бути більш організованими, продуктивними та успішними
 
+___
+
+<img src="https://github.com/ItsMeIns/CheckYourTask/assets/106601710/972342d3-bd8e-4eb3-8c08-5f2d5c79756b" width="200" height="450">
+
+<img src="https://github.com/ItsMeIns/CheckYourTask/assets/106601710/28c891ea-98c3-4c7a-be1e-b029d73704a9" width="200" height="450">
+
+<img src="https://github.com/ItsMeIns/CheckYourTask/assets/106601710/bb96683c-8583-42c5-a0c4-e398f98e49a3" width="200" height="450">
+
+<img src="https://github.com/ItsMeIns/CheckYourTask/assets/106601710/92857cf1-b225-472b-a30b-d58c01aba83e" width="200" height="450">
+
+___
 
 
