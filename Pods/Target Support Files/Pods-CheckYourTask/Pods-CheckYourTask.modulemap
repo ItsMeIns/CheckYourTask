@@ -1,0 +1,6 @@
+framework module Pods_CheckYourTask {
+  umbrella header "Pods-CheckYourTask-umbrella.h"
+
+  export *
+  module * { export * }
+}
