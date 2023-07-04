@@ -228,6 +228,7 @@ class AddTaskViewController: UIViewController, UITextFieldDelegate {
                 
                 if settings.authorizationStatus == .authorized {
                     let content = UNMutableNotificationContent()
+                    content.sound = UNNotificationSound.default
                     content.title = title
                     content.body = message
                     
